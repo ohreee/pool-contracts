@@ -1,0 +1,27 @@
+{
+  "name": "simple_bank",
+  "description": "This is a modified version of the Simple Bank smart contract example using Solidity.  Instead of rewarding all clients, which means that the bank contract should hold all that Ether beforehand, it only rewards the 3 first clients with 10 Ether each.",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogargon/simple_bank.git"
+  },
+  "author": "edd34",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rogargon/simple_bank/issues"
+  },
+  "homepage": "https://github.com/rogargon/simple_bank#readme",
+  "dependencies": {
+    "chai": "^4.3.0",
+    "mocha": "^8.3.0",
+    "web3": "^1.3.4"
+  }
+}
