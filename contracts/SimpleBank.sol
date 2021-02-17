@@ -10,13 +10,10 @@ contract SimpleBank {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    // Constructor is "payable" so it can receive the initial funding of 30,
-    // required to reward the first 3 clients
-    constructor() payable {
-        require(msg.value > 0 ether, "Initial funding required");
+    constructor() {
         /* Set the owner to the creator of this contract */
         owner = msg.sender;
-        balances[owner] = msg.value;
+        balances[owner] = 0;
         exists[owner] = true;
         participantCount = 0;
     }
