@@ -40,25 +40,25 @@ contract("SimpleBank - basic initialization", function (accounts) {
     // assert.equal(depositsBalance.toNumber(), initialDepositsBalance, "initial balance is incorrect");
   });
 
-  it("should deposit correct amount", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson});
-    const deposit = 1.5 * ether;
+  // it("should deposit correct amount", async () => {
+  //   const bank = await SimpleBank.deployed({ from: chairperson});
+  //   const deposit = 1.5 * ether;
 
-    const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+  //   const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
 
-    const balance = await bank.balance({ from: alice });
-    assert.equal(balance, deposit,
-      "deposit amount incorrect, check deposit method");
-    //   const depositsBalance = await bank.depositsBalance();
-    //   assert.equal(depositsBalance, initialDepositsBalance + deposit,
-    //     "bank deposits balance should be increased");
+  //   const balance = await bank.balance({ from: alice });
+  //   assert.equal(balance, deposit,
+  //     "deposit amount incorrect, check deposit method");
+  //   //   const depositsBalance = await bank.depositsBalance();
+  //   //   assert.equal(depositsBalance, initialDepositsBalance + deposit,
+  //   //     "bank deposits balance should be increased");
 
-    const expectedEventResult = { accountAddress: alice, amount: deposit };
-    assert.equal(receipt.logs[0].args.accountAddress, expectedEventResult.accountAddress,
-      "LogDepositMade event accountAddress property not emitted");
-    assert.equal(receipt.logs[0].args.amount, expectedEventResult.amount,
-      "LogDepositMade event amount property not emitted");
-  });
+  //   const expectedEventResult = { accountAddress: alice, amount: deposit };
+  //   assert.equal(receipt.logs[0].args.accountAddress, expectedEventResult.accountAddress,
+  //     "LogDepositMade event accountAddress property not emitted");
+  //   assert.equal(receipt.logs[0].args.amount, expectedEventResult.amount,
+  //     "LogDepositMade event amount property not emitted");
+  // });
 });
 
 contract("SimpleBank - proper withdrawal", function (accounts) {
