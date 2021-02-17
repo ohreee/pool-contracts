@@ -1,60 +1,69 @@
-pragma solidity ^0.5.8;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
 contract SimpleBank {
-    uint8 private clientCount;
-    mapping (address => uint) private balances;
     address public owner;
+    uint8 private participantCount;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public exists;
 
-  // Log the event about a deposit being made by an address and its amount
-    event LogDepositMade(address indexed accountAddress, uint amount);
+    // Log the event about a deposit being made by an address and its amount
+    event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    // Constructor is "payable" so it can receive the initial funding of 30, 
+    // Constructor is "payable" so it can receive the initial funding of 30,
     // required to reward the first 3 clients
-    constructor() public payable {
-        require(msg.value == 30 ether, "30 ether initial funding required");
+    constructor() payable {
+        require(msg.value > 0 ether, "Initial funding required");
         /* Set the owner to the creator of this contract */
         owner = msg.sender;
-        clientCount = 0;
+        balances[owner] = msg.value;
+        exists[owner] = true;
+        participantCount = 0;
     }
 
-    /// @notice Enroll a customer with the bank, 
-    /// giving the first 3 of them 10 ether as reward
+    /// @notice Enroll a customer with the bank,
+    /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
-    function enroll() public returns (uint) {
-        if (clientCount < 3) {
-            clientCount++;
-            balances[msg.sender] = 10 ether;
-        }
-        return balances[msg.sender];
+    function enroll(address participant) public returns (uint256) {
+        require(msg.sender == owner);
+        participantCount++;
+        balances[participant] = 0;
+        exists[participant] = true;
+        return balances[participant];
     }
 
     /// @notice Deposit ether into bank, requires method is "payable"
     /// @return The balance of the user after the deposit is made
-    function deposit() public payable returns (uint) {
+    function deposit() public payable returns (uint256) {
+        require(exists[msg.sender] == true);
         balances[msg.sender] += msg.value;
         emit LogDepositMade(msg.sender, msg.value);
         return balances[msg.sender];
     }
 
-    /// @notice Withdraw ether from bank
-    /// @return The balance remaining for the user
-    function withdraw(uint withdrawAmount) public returns (uint remainingBal) {
+    /// notice Withdraw ether from bank
+    /// return The balance remaining for the user
+    function withdraw(uint256 withdrawAmount)
+        public
+        returns (uint256 remainingBal)
+    {
+        require(exists[msg.sender] == true);
         // Check enough balance available, otherwise just return balance
         if (withdrawAmount <= balances[msg.sender]) {
             balances[msg.sender] -= withdrawAmount;
-            msg.sender.transfer(withdrawAmount);
+            payable(msg.sender).transfer(withdrawAmount);
         }
         return balances[msg.sender];
     }
 
     /// @notice Just reads balance of the account requesting, so "constant"
     /// @return The balance of the user
-    function balance() public view returns (uint) {
+    function balance() public view returns (uint256) {
         return balances[msg.sender];
     }
 
     /// @return The balance of the Simple Bank contract
-    function depositsBalance() public view returns (uint) {
+    function depositsBalance() public view returns (uint256) {
         return address(this).balance;
     }
 }
