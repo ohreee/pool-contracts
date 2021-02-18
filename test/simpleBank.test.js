@@ -13,9 +13,10 @@ contract("SimpleBank - basic initialization", function (accounts) {
   const bob = accounts[2];
   const eddine = accounts[3];
   const aslan = accounts[4];
+  const arnaud = accounts[5];
 
   it("enroll everyone", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson});
+    const bank = await SimpleBank.deployed({ from: chairperson });
     var chairpersonBalanceWallet = await this.web3.eth.getBalance(chairperson);
     // var gasPrice = await this.web3.eth.getGasPrice();
     // assert.equal(chairpersonBalanceWallet, Web3.utils.toWei("99", "ether") - bank.gas * gasPrice);
@@ -40,25 +41,37 @@ contract("SimpleBank - basic initialization", function (accounts) {
     // assert.equal(depositsBalance.toNumber(), initialDepositsBalance, "initial balance is incorrect");
   });
 
-  // it("should deposit correct amount", async () => {
-  //   const bank = await SimpleBank.deployed({ from: chairperson});
-  //   const deposit = 1.5 * ether;
+  it("should deposit correct amount", async () => {
+    const bank = await SimpleBank.deployed({ from: chairperson });
+    const deposit = 1.5 * ether;
 
-  //   const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+    const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
 
-  //   const balance = await bank.balance({ from: alice });
-  //   assert.equal(balance, deposit,
-  //     "deposit amount incorrect, check deposit method");
-  //   //   const depositsBalance = await bank.depositsBalance();
-  //   //   assert.equal(depositsBalance, initialDepositsBalance + deposit,
-  //   //     "bank deposits balance should be increased");
+    const balance = await bank.balance({ from: alice });
+    assert.equal(balance, deposit,
+      "deposit amount incorrect, check deposit method");
+    const depositsBalance = await bank.depositsBalance();
+    assert.equal(depositsBalance, deposit,
+      "bank deposits balance should be increased");
 
-  //   const expectedEventResult = { accountAddress: alice, amount: deposit };
-  //   assert.equal(receipt.logs[0].args.accountAddress, expectedEventResult.accountAddress,
-  //     "LogDepositMade event accountAddress property not emitted");
-  //   assert.equal(receipt.logs[0].args.amount, expectedEventResult.amount,
-  //     "LogDepositMade event amount property not emitted");
-  // });
+    const expectedEventResult = { accountAddress: alice, amount: deposit };
+    assert.equal(receipt.logs[0].args.accountAddress, expectedEventResult.accountAddress,
+      "LogDepositMade event accountAddress property not emitted");
+    assert.equal(receipt.logs[0].args.amount, expectedEventResult.amount,
+      "LogDepositMade event amount property not emitted");
+  });
+
+  it("should not deposit if not enrolled", async () => {
+    const bank = await SimpleBank.deployed({ from: chairperson });
+    const deposit = 1.5 * ether;
+
+    try {
+      await bank.deposit({ from: arnaud, value: web3.utils.toBN(deposit) });
+    } catch (e) {
+      assert(e, "Error: VM Exception while processing transaction: revert");
+    }
+
+  });
 });
 
 contract("SimpleBank - proper withdrawal", function (accounts) {
@@ -69,7 +82,7 @@ contract("SimpleBank - proper withdrawal", function (accounts) {
   const aslan = accounts[4];
 
   it("should withdraw correct amount", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson});
+    const bank = await SimpleBank.deployed({ from: chairperson });
     const deposit = 5 * ether;
 
     await bank.enroll(alice, { from: chairperson });
@@ -90,7 +103,7 @@ contract("SimpleBank - incorrect withdrawal", function (accounts) {
   const alice = accounts[1];
 
   it("should keep balance unchanged if withdraw greater than balance", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson});
+    const bank = await SimpleBank.deployed({ from: chairperson });
     const deposit = 3 * ether;
 
     await bank.enroll(alice, { from: chairperson });
@@ -111,7 +124,7 @@ contract("SimpleBank - not enrolled - fallback works", function (accounts) {
   const alice = accounts[1];
 
   it("should revert ether sent to this contract through fallback", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson});
+    const bank = await SimpleBank.deployed({ from: chairperson });
     const deposit = 3 * ether;
 
     const first_balance = await this.web3.eth.getBalance(alice);
