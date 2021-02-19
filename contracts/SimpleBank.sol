@@ -23,6 +23,7 @@ contract SimpleBank {
     /// @return The balance of the user after enrolling
     function enroll(address participant) public returns (uint256) {
         require(msg.sender == owner);
+        require(exists[participant] == false);
         participantCount++;
         balances[participant] = 0;
         exists[participant] = true;
