@@ -1,4 +1,4 @@
-import SimpleStorage from './contracts/SimpleBank.json'
+import SimpleBank from './contracts/SimpleBank.json'
 
 const options = {
   web3: {
@@ -8,7 +8,7 @@ const options = {
       url: 'ws://127.0.0.1:8545'
     }
   },
-  contracts: [SimpleStorage],
+  contracts: [SimpleBank],
   events: {
     SimpleBank: ['LogDepositMade']
   },
