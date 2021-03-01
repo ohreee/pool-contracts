@@ -21,6 +21,8 @@ contract("SimpleBank - basic initialization", function (accounts) {
     // var gasPrice = await this.web3.eth.getGasPrice();
     // assert.equal(chairpersonBalanceWallet, Web3.utils.toWei("99", "ether") - bank.gas * gasPrice);
 
+    assert.isTrue(await bank.is_owner({ from: chairperson }))
+
     await bank.enroll(alice, { from: chairperson });
     const aliceBalance = await bank.balance({ from: alice });
     assert.equal(aliceBalance.toNumber(), 0, "initial balance is incorrect");

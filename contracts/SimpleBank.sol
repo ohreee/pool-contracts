@@ -64,4 +64,8 @@ contract SimpleBank {
     function depositsBalance() public view returns (uint256) {
         return address(this).balance;
     }
+
+    function is_owner() public view returns(bool) {
+        return owner == msg.sender;
+    }
 }
