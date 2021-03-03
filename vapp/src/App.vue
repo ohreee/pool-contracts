@@ -11,12 +11,12 @@
       <drizzle-contract
         contractName="SimpleBank"
         method="depositsBalance"
-        label="Pool balance"
+        label="Total Pool balance (wei)"
       />
       <drizzle-contract
         contractName="SimpleBank"
         method="balance"
-        label="Your total deposit"
+        label="Your deposit (wei)"
       />
       <div v-if="isOwner">
         As owner of the pool, you can add a participant to the Pool
