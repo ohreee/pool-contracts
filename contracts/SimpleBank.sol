@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 contract SimpleBank {
     address public owner;
     uint8 private participantCount;
+    address[] public participantsList;
     mapping(address => uint256) public balances;
     mapping(address => bool) public exists;
 
@@ -16,6 +17,7 @@ contract SimpleBank {
         balances[owner] = 0;
         exists[owner] = true;
         participantCount = 0;
+        participantsList.push(owner);
     }
 
     /// @notice Enroll a customer with the bank,
@@ -25,6 +27,7 @@ contract SimpleBank {
         require(msg.sender == owner);
         require(exists[participant] == false);
         participantCount++;
+        participantsList.push(participant);
         balances[participant] = 0;
         exists[participant] = true;
         return balances[participant];
@@ -65,7 +68,11 @@ contract SimpleBank {
         return address(this).balance;
     }
 
-    function is_owner() public view returns(bool) {
+    function is_owner() public view returns (bool) {
         return owner == msg.sender;
+    }
+
+    function getParticipantList() public view returns (address[] memory) {
+        return participantsList;
     }
 }
