@@ -72,6 +72,15 @@ contract SimpleBank {
         return owner == msg.sender;
     }
 
+    function balanceParticipant(address participant) public view returns(uint256) {
+        return balances[participant];
+    }
+
+    function is_allowed(address participant) public view returns(bool) {
+        return exists[participant] == true;
+    }
+
+    /// @return the participant list
     function getParticipantList() public view returns (address[] memory) {
         return participantsList;
     }
