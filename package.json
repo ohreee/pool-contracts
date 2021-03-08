@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/rogargon/simple_bank#readme",
   "dependencies": {
+    "@openzeppelin/test-environment": "^0.1.9",
     "chai": "^4.3.0",
     "ganache-cli": "^6.12.2",
     "mocha": "^8.3.0",
