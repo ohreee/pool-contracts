@@ -1,4 +1,4 @@
-import SimpleBank from './contracts/SimpleBank.json'
+import SimpleBank from '../../build/contracts/SimpleBank.json'
 
 const options = {
   web3: {
