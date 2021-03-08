@@ -9,7 +9,7 @@ contract PoolRecorder {
         string description;
         address owner;
         address PoolAddress;
-        bool visibility;
+        bool visible;
     }
 
     address[] poolList;
@@ -21,9 +21,10 @@ contract PoolRecorder {
         string memory _name,
         string memory _description,
         bool _visible
-    ) public {
+    ) public returns(address) {
         SimpleBank newPoolBank = new SimpleBank();
         addPool(address(newPoolBank), msg.sender, _name, _description, _visible);
+        return address(newPoolBank);
     }
 
     function addPool(

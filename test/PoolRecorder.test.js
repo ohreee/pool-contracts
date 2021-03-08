@@ -1,6 +1,6 @@
 const { accounts, contract } = require('@openzeppelin/test-environment');
 const [owner, alice, bob, charlie, dean, emily, farah, gina, harry, irina] = accounts;
-
+var Web3 = require('web3');
 const { expect, assert } = require('chai');
 
 const PoolRecorder = contract.fromArtifact('PoolRecorder'); // Loads a compiled contract
@@ -12,24 +12,38 @@ describe('PoolRecorder', function () {
         this.poolRecorder = await PoolRecorder.new({ from: owner });
     });
 
-    it('create a new instance of SimpleBank and add it to poolrecorder', async () => {
-        this.PoolOne = await SimpleBank.new({ from: alice });
-        this.PoolTwo = await SimpleBank.new({ from: bob });
-        this.poolRecorder.addPool(this.PoolOne.address, alice, "alice's pool", "pool for alice and friends", true)
-        this.poolRecorder.addPool(this.PoolTwo.address, bob, "bob's pool", "pool for bob and friends", true)
-        const [aPoolOne, aPoolTwo] = await this.poolRecorder.getListPools()
-        console.log(await this.poolRecorder.getPoolInfo(aPoolOne))
-        console.log(await this.poolRecorder.getPoolInfo(aPoolTwo))
-        assert.isTrue(true)
+    it('should create new pools from PoolRecorder smarcontract', async () => {
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
+        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
+        const listPool = await this.poolRecorder.getListPools()
+        assert.equal(listPool.length, 2)
+        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0])
+        assert.equal(getPoolInfoAlice.name, "alice\'s pool")
+        assert.equal(getPoolInfoAlice.description, "pool for alice and friends")
+        assert.equal(getPoolInfoAlice.visible, true)
+        assert.equal(getPoolInfoAlice.owner, alice)
     });
 
-    it('create a new pool from poolrecorder', async () => {
-        await this.poolRecorder.createPool("charlie's pool", "pool for charlie and friends", true, { from: charlie })
-        await this.poolRecorder.createPool("dean's pool", "pool for dean and friends", true, { from: dean })
+    it('should remove a pool from PoolRecorder smarcontract', async () => {
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
+        // addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
-        console.log(await this.poolRecorder.getPoolInfo(listPool[0]))
-        console.log(await this.poolRecorder.getPoolInfo(listPool[1]))
-        assert.isTrue(true)
-        // expect(await PoolRecorder.owner()).to.equal(owner);
+        assert.equal(listPool.length, 1)
+        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0])
+        assert.equal(getPoolInfoAlice.name, "alice\'s pool")
+        assert.equal(getPoolInfoAlice.description, "pool for alice and friends")
+        assert.equal(getPoolInfoAlice.visible, true)
+        assert.equal(getPoolInfoAlice.owner, alice)
+    });
+
+    it('should remove a pool from PoolRecorder smarcontract', async () => {
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
+        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
+        const listPool = await this.poolRecorder.getListPools()
+        assert.equal(listPool.length, 2)
+        await this.poolRecorder.removePool(listPool[0])
+        listPoolNew = await this.poolRecorder.getListPools()
+        // assert.equal(listPoolNew.length, 1)
+        assert.equal(listPoolNew[0], listPool[1])
     });
 });
