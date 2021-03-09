@@ -9,7 +9,7 @@ const wei = 1;
 const initialDepositsBalance = 1 * ether;
 const [chairperson, alice, bob, eddine, aslan, emily, farah, gina, harry, irina] = accounts;
 
-describe("SimpleBank", function (accounts) {
+describe("SimpleBank", () => {
 
   it("enroll everyone", async () => {
     bank = await SimpleBank.new(false, { from: chairperson });
