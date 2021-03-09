@@ -116,4 +116,23 @@ describe("SimpleBank", () => {
     assert.approximately(parseFloat(Web3.utils.fromWei(first_balance)), parseFloat(Web3.utils.fromWei(second_balance)), 1.0, "Alice balance should be kept intact");
 
   });
+
+  it("should allow depost if pool is public", async () => {
+    bank = await SimpleBank.new(true, { from: chairperson });
+    const deposit = 3 * ether;
+    await bank.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
+    await bank.deposit({ from: bob, value: Web3.utils.toBN(deposit) });
+
+    const AliceBalancePool = await bank.balance({ from: alice });
+    const BobBalancePool = await bank.balance({ from: bob });
+    assert.equal(Web3.utils.fromWei(AliceBalancePool), Web3.utils.fromWei(BobBalancePool))
+    assert.equal(Web3.utils.fromWei(AliceBalancePool), 3)
+
+    const getParticipantList = await bank.getParticipantList()
+    assert.equal(getParticipantList.length, 3)
+    assert.include(getParticipantList, chairperson)
+    assert.include(getParticipantList, alice)
+    assert.include(getParticipantList, bob)
+
+  });
 });
