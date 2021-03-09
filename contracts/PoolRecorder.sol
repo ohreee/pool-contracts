@@ -21,9 +21,15 @@ contract PoolRecorder {
         string memory _name,
         string memory _description,
         bool _visible
-    ) public returns(address) {
-        SimpleBank newPoolBank = new SimpleBank();
-        addPool(address(newPoolBank), msg.sender, _name, _description, _visible);
+    ) public returns (address) {
+        SimpleBank newPoolBank = new SimpleBank(true);
+        addPool(
+            address(newPoolBank),
+            msg.sender,
+            _name,
+            _description,
+            _visible
+        );
         return address(newPoolBank);
     }
 
@@ -33,7 +39,7 @@ contract PoolRecorder {
         string memory _name,
         string memory _description,
         bool _visible
-    ) public {
+    ) private {
         poolList.push(poolAddress);
         poolRecorded[poolAddress] = Pool(
             _name,

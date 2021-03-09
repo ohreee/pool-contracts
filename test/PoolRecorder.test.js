@@ -1,10 +1,11 @@
 const { accounts, contract } = require('@openzeppelin/test-environment');
-const [owner, alice, bob, charlie, dean, emily, farah, gina, harry, irina] = accounts;
 var Web3 = require('web3');
-const { expect, assert } = require('chai');
+const { assert } = require('chai');
 
 const PoolRecorder = contract.fromArtifact('PoolRecorder'); // Loads a compiled contract
 const SimpleBank = contract.fromArtifact('SimpleBank'); // Loads a compiled contract
+
+const [owner, alice, bob, charlie, dean, emily, farah, gina, harry, irina] = accounts;
 
 describe('PoolRecorder', function () {
 
