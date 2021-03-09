@@ -1,26 +1,19 @@
+const { accounts, contract } = require('@openzeppelin/test-environment');
+const Web3 = require('web3');
+const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 const { assert } = require('chai');
-var Web3 = require('web3');
 
-var SimpleBank = artifacts.require("./SimpleBank.sol");
-
+const SimpleBank = contract.fromArtifact('SimpleBank'); // Loads a compiled contract
 const ether = 10 ** 18; // 1 ether = 1000000000000000000 wei
 const wei = 1;
 const initialDepositsBalance = 1 * ether;
+const [chairperson, alice, bob, eddine, aslan, emily, farah, gina, harry, irina] = accounts;
 
-contract("SimpleBank - basic initialization", function (accounts) {
-  const chairperson = accounts[0];
-  const alice = accounts[1];
-  const bob = accounts[2];
-  const eddine = accounts[3];
-  const aslan = accounts[4];
-  const arnaud = accounts[5];
+describe("SimpleBank", function (accounts) {
 
   it("enroll everyone", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
-    var chairpersonBalanceWallet = await this.web3.eth.getBalance(chairperson);
-    // var gasPrice = await this.web3.eth.getGasPrice();
-    // assert.equal(chairpersonBalanceWallet, Web3.utils.toWei("99", "ether") - bank.gas * gasPrice);
-
+    bank = await SimpleBank.new(false, { from: chairperson });
+    // var chairpersonBalanceWallet = await this.web3.eth.getBalance(chairperson);
     assert.isTrue(await bank.is_owner({ from: chairperson }))
 
     await bank.enroll(alice, { from: chairperson });
@@ -44,10 +37,10 @@ contract("SimpleBank - basic initialization", function (accounts) {
   });
 
   it("should deposit correct amount", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
+    bank = await SimpleBank.new(false, { from: chairperson });
     const deposit = 1.5 * ether;
-
-    const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+    await bank.enroll(alice, { from: chairperson });
+    const receipt = await bank.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
 
     const balance = await bank.balance({ from: alice });
     assert.equal(balance, deposit,
@@ -64,54 +57,41 @@ contract("SimpleBank - basic initialization", function (accounts) {
   });
 
   it("should not deposit if not enrolled", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
+    bank = await SimpleBank.new(false, { from: chairperson });
     const deposit = 1.5 * ether;
 
     try {
-      await bank.deposit({ from: arnaud, value: web3.utils.toBN(deposit) });
+      await bank.deposit({ from: arnaud, value: Web3.utils.toBN(deposit) });
     } catch (e) {
       assert(e, "Error: VM Exception while processing transaction: revert");
     }
 
   });
-});
-
-contract("SimpleBank - proper withdrawal", function (accounts) {
-  const chairperson = accounts[0];
-  const alice = accounts[1];
-  const bob = accounts[2];
-  const eddine = accounts[3];
-  const aslan = accounts[4];
 
   it("should withdraw correct amount", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
+    bank = await SimpleBank.new(false, { from: chairperson });
     const deposit = 5 * ether;
 
     await bank.enroll(alice, { from: chairperson });
-    const receipt = await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+    const receipt = await bank.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
     const balance = await bank.balance({ from: alice });
     assert.equal(balance, deposit,
       "deposit amount incorrect, check deposit method");
 
-    await bank.withdraw(web3.utils.toBN(deposit), { from: alice });
+    await bank.withdraw(Web3.utils.toBN(deposit), { from: alice });
 
     const new_balance = await bank.balance({ from: alice });
     assert.equal(new_balance, 0, "withdraw amount incorrect");
   });
-});
-
-contract("SimpleBank - incorrect withdrawal", function (accounts) {
-  const chairperson = accounts[0];
-  const alice = accounts[1];
 
   it("should keep balance unchanged if withdraw greater than balance", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
+    bank = await SimpleBank.new(false, { from: chairperson });
     const deposit = 3 * ether;
 
     await bank.enroll(alice, { from: chairperson });
-    await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+    await bank.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
     try {
-      await bank.withdraw(web3.utils.toBN(deposit + 1 * ether), { from: alice });
+      await bank.withdraw(Web3.utils.toBN(deposit + 1 * ether), { from: alice });
     } catch (e) {
       assert(e, "Error: VM Exception while processing transaction: revert");
     }
@@ -119,26 +99,21 @@ contract("SimpleBank - incorrect withdrawal", function (accounts) {
     const balance = await bank.balance({ from: alice });
     assert.equal(balance, deposit, "balance should be kept intact");
   });
-});
-
-contract("SimpleBank - not enrolled - fallback works", function (accounts) {
-  const chairperson = accounts[0];
-  const alice = accounts[1];
 
   it("should revert ether sent to this contract through fallback", async () => {
-    const bank = await SimpleBank.deployed({ from: chairperson });
+    bank = await SimpleBank.new(false, { from: chairperson });
     const deposit = 3 * ether;
 
-    const first_balance = await this.web3.eth.getBalance(alice);
+    const first_balance = await web3.eth.getBalance(alice);
 
     try {
-      await bank.deposit({ from: alice, value: web3.utils.toBN(deposit) });
+      await bank.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
     } catch (e) {
       assert(e, "Error: VM Exception while processing transaction: revert");
     }
 
-    const second_balance = await this.web3.eth.getBalance(alice);
-    assert.approximately(parseFloat(Web3.utils.fromWei(first_balance)), parseFloat(Web3.utils.fromWei(second_balance)), 1, "Alice balance should be kept intact");
+    const second_balance = await web3.eth.getBalance(alice);
+    assert.approximately(parseFloat(Web3.utils.fromWei(first_balance)), parseFloat(Web3.utils.fromWei(second_balance)), 1.0, "Alice balance should be kept intact");
 
   });
 });

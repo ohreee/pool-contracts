@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 contract SimpleBank {
+    bool private isPublic;
     address public owner;
     uint8 private participantCount;
     address[] public participantsList;
@@ -11,8 +12,9 @@ contract SimpleBank {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    constructor() {
+    constructor(bool _isPublic) {
         /* Set the owner to the creator of this contract */
+        isPublic = _isPublic;
         owner = msg.sender;
         balances[owner] = 0;
         exists[owner] = true;
@@ -24,7 +26,7 @@ contract SimpleBank {
     /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
     function enroll(address participant) public returns (uint256) {
-        require(msg.sender == owner);
+        require(msg.sender == owner && isPublic == false);
         require(exists[participant] == false);
         participantCount++;
         participantsList.push(participant);
@@ -36,7 +38,13 @@ contract SimpleBank {
     /// @notice Deposit ether into bank, requires method is "payable"
     /// @return The balance of the user after the deposit is made
     function deposit() public payable returns (uint256) {
-        require(exists[msg.sender] == true);
+        require(exists[msg.sender] == true || isPublic == true);
+        if (is_allowed(msg.sender) == false) {
+            participantCount++;
+            participantsList.push(msg.sender);
+            balances[msg.sender] = 0;
+            exists[msg.sender] = true;
+        }
         balances[msg.sender] += msg.value;
         emit LogDepositMade(msg.sender, msg.value);
         return balances[msg.sender];
@@ -72,11 +80,15 @@ contract SimpleBank {
         return owner == msg.sender;
     }
 
-    function balanceParticipant(address participant) public view returns(uint256) {
+    function balanceParticipant(address participant)
+        public
+        view
+        returns (uint256)
+    {
         return balances[participant];
     }
 
-    function is_allowed(address participant) public view returns(bool) {
+    function is_allowed(address participant) public view returns (bool) {
         return exists[participant] == true;
     }
 
