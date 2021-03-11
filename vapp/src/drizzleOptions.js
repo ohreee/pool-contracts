@@ -1,4 +1,5 @@
 import SimpleBank from '../../build/contracts/SimpleBank.json'
+import PoolRecorder from '../../build/contracts/PoolRecorder.json'
 
 const options = {
   web3: {
@@ -8,7 +9,7 @@ const options = {
       url: 'ws://127.0.0.1:8545'
     }
   },
-  contracts: [SimpleBank],
+  contracts: [SimpleBank, PoolRecorder],
   events: {
     SimpleBank: ['LogDepositMade']
   },
