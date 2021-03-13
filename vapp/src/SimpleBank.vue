@@ -3,7 +3,7 @@
     <img alt="Vue logo" src="./assets/logo.png" />
 
     <div class="section">
-      <h2>Pool Bank Dapp</h2>
+      <h2>Pool Bank Dapp {{ addressPool }}</h2>
       <drizzle-account units="Ether" :precision="3" />
     </div>
 
@@ -59,14 +59,30 @@
 <script>
 import { mapGetters } from "vuex";
 import Toast from "./Toast";
+import SimpleBank from "../../build/contracts/SimpleBank.json";
 
 export default {
+  props: ["addressPool"],
   name: "simplebank",
   data: () => {
     return {
       amount_deposit: 0,
       amount_withdraw: 0,
     };
+  },
+  components: {
+    Toast,
+  },
+  watch: {
+    addressPool: function (newVal, oldVal) {
+      // this.drizzleInstance.addContract(String(newVal))
+      var contractConfig = {
+        contractName: newVal,
+        web3Contract: new this.drizzleInstance.web3.eth.Contract(SimpleBank.abi, newVal),
+      };
+      this.drizzleInstance.addContract(contractConfig)
+      console.log(this.drizzleInstance.addContract);
+    },
   },
   computed: {
     ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
@@ -94,9 +110,6 @@ export default {
       return -1;
     },
   },
-  components: {
-    Toast,
-  },
   methods: {
     onClickDepositBtn() {
       // var state = this.drizzleInstance.store.getState()
@@ -112,6 +125,9 @@ export default {
       this.drizzleInstance.contracts.SimpleBank.methods.withdraw.cacheSend(
         this.drizzleInstance.web3.utils.toWei(this.amount_withdraw, "ether")
       );
+    },
+    changeAddressInstance(addressInstance) {
+
     },
   },
   created() {
