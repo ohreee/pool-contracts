@@ -7,7 +7,7 @@
       <drizzle-account units="Ether" :precision="3" />
     </div>
     <div>
-      <form action="" @submit="onClickAddPoolBtn">
+      <form action="">
         <p>
           <label>Name of pool</label>
           <input type="string" name="" value="namePool" v-model="namePool" />
@@ -35,7 +35,15 @@
         <p>Pool's Name {{ getPoolInfo(address)[0] }}</p>
         <p>Description {{ getPoolInfo(address)[1] }}</p>
         <p>Owner {{ getPoolInfo(address)[2] }}</p>
-        <p>Address of Pool in blockchain {{ getPoolInfo(address)[3] }}</p>
+        <p>
+          Address of Pool in blockchain
+          {{ getPoolInfo(address)[3] }}
+          <input
+            type="button"
+            value="Update Address"
+            @click="updateAddress(getPoolInfo(address)[3])"
+          />
+        </p>
         <p>Is Pool Public ? {{ getPoolInfo(address)[4] }}</p>
       </li>
     </ul>
@@ -92,6 +100,13 @@ export default {
         this.descriptionPool,
         this.isPublic
       );
+    },
+    updateAddress(address) {
+      this.$store.commit("updateAddress", address);
+      this.$router.push({
+        path: "/simplebank?address=" + address,
+        params: { address: address },
+      });
     },
   },
   created() {

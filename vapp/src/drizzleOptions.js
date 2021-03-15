@@ -1,4 +1,4 @@
-import SimpleBank from '../../build/contracts/SimpleBank.json'
+// import SimpleBank from '../../build/contracts/SimpleBank.json'
 import PoolRecorder from '../../build/contracts/PoolRecorder.json'
 
 const options = {
@@ -9,13 +9,14 @@ const options = {
       url: 'ws://127.0.0.1:8545'
     }
   },
-  contracts: [SimpleBank, PoolRecorder],
+  contracts: [PoolRecorder],
   events: {
     SimpleBank: ['LogDepositMade']
   },
   polls: {
     //check the blockchain every 5s
-    accounts: 5000
+    accounts: 1000,
+    blocks: 1000
   }
 }
 

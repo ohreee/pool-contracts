@@ -96,4 +96,8 @@ contract SimpleBank {
     function getParticipantList() public view returns (address[] memory) {
         return participantsList;
     }
+
+    function invest_compound() public pure returns(uint) {
+        return 0;
+    }
 }

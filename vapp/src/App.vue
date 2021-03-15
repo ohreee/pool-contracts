@@ -1,14 +1,32 @@
 <template>
-<PoolRecorder/>
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Pool Dapp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!-- <td><PoolRecorder /></td> -->
+          <router-view class="view"></router-view>
+          <!-- <td><SimpleBank2 :addressPool="this.$store.state.addressSimpleBank" /></td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
 // import PoolRecorder from './PoolRecorder'
-import PoolRecorder from './PoolRecorder.vue';
+// import PoolRecorder from './PoolRecorder.vue';
 
 export default {
-  components: { PoolRecorder },
+  // components: { PoolRecorder },
   name: "app",
+  created() {
+    // this.$router.push({ path: "/poolrecorder" });
+  },
 };
 </script>
 
