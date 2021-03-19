@@ -69,6 +69,7 @@ export default {
   computed: {
     ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
     ...mapGetters("contracts", ["getContractData", "contractInstances"]),
+    ...mapGetters("accounts", ["activeAccount"]),
     PoolList() {
       if (this.isDrizzleInitialized) {
         const data = this.getContractData({
@@ -98,11 +99,12 @@ export default {
       this.drizzleInstance.contracts.PoolRecorder.methods.createPool.cacheSend(
         this.namePool,
         this.descriptionPool,
-        this.isPublic
+        this.isPublic,
+        this.activeAccount
       );
     },
     updateAddress(address) {
-      this.$store.commit("updateAddress", address);
+      // this.$store.commit("updateAddress", address);
       this.$router.push({
         path: "/simplebank?address=" + address,
         params: { address: address },

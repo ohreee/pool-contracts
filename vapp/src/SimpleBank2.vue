@@ -4,7 +4,7 @@
 
     <input type="button" value="home" @click="clickHome" />
     <div class="section">
-      <h2>Pool Bank Dapp {{ this.$route.query.address }}</h2>
+      <h2>Pool Bank Dapp {{ this.$route.query.address }} {{ isOwner }}</h2>
       <drizzle-account units="Ether" :precision="3" />
     </div>
 
@@ -68,6 +68,7 @@ export default {
     return {
       amount_deposit: 0,
       amount_withdraw: 0,
+      address_enrolled: "",
     };
   },
   components: {
@@ -124,17 +125,33 @@ export default {
     clickHome() {
       this.$router.push({ path: "/" });
     },
-  },
-  mounted() {
-    // while (!this.isDrizzleInitialized);
-    var contractConfig = {
-      contractName: this.$route.query.address,
-      web3Contract: new this.drizzleInstance.web3.eth.Contract(
-        SimpleBank.abi,
+    onClickEnroll() {
+      this.drizzleInstance.contracts[
         this.$route.query.address
-      ),
-    };
-    this.drizzleInstance.addContract(contractConfig);
+      ].methods.enroll.cacheSend(
+        this.drizzleInstance.web3.utils.toChecksumAddress(
+          this.address_enrolled
+        ),
+        {
+          from: this.drizzleInstance.web3.utils.toChecksumAddress(
+            this.activeAccount
+          ),
+        }
+      );
+    },
+  },
+  created() {
+    // while (!this.isDrizzleInitialized);
+    if (!(this.$route.query.address in this.drizzleInstance.contracts)) {
+      var contractConfig = {
+        contractName: this.$route.query.address,
+        web3Contract: new this.drizzleInstance.web3.eth.Contract(
+          SimpleBank.abi,
+          this.$route.query.address
+        ),
+      };
+      this.drizzleInstance.addContract(contractConfig);
+    }
     this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
       contractName: this.$route.query.address, // i.e. TwistedAuctionMock
       method: "is_owner",

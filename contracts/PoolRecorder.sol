@@ -20,9 +20,10 @@ contract PoolRecorder {
     function createPool(
         string memory _name,
         string memory _description,
-        bool _visible
+        bool _visible,
+        address _owner
     ) public returns (address) {
-        SimpleBank newPoolBank = new SimpleBank(true);
+        SimpleBank newPoolBank = new SimpleBank(true, _owner);
         addPool(
             address(newPoolBank),
             msg.sender,

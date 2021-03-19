@@ -12,10 +12,10 @@ contract SimpleBank {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    constructor(bool _isPublic) {
+    constructor(bool _isPublic, address _owner) {
         /* Set the owner to the creator of this contract */
         isPublic = _isPublic;
-        owner = msg.sender;
+        owner = _owner;
         balances[owner] = 0;
         exists[owner] = true;
         participantCount = 0;
@@ -26,7 +26,7 @@ contract SimpleBank {
     /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
     function enroll(address participant) public returns (uint256) {
-        require(msg.sender == owner && isPublic == false);
+        require(msg.sender == owner);
         require(exists[participant] == false);
         participantCount++;
         participantsList.push(participant);

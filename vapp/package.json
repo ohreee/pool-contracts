@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vue-cli-service serve --skip-plugin @vue/cli-plugin-eslint",
+    "build": "vue-cli-service build --skip-plugin @vue/cli-plugin-eslint",
+    "lint": "vue-cli-service lint --skip-plugin @vue/cli-plugin-eslint"
   },
   "dependencies": {
     "@drizzle/vue-plugin": "^0.1.3",
