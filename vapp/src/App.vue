@@ -1,42 +1,34 @@
 <template>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th colspan="2">Pool Dapp</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <!-- <td><PoolRecorder /></td> -->
-          <router-view class="view"></router-view>
-          <!-- <td><SimpleBank2 :addressPool="this.$store.state.addressSimpleBank" /></td> -->
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div v-if="isDrizzleInitialized">
+  <Navbar />
+  <router-view />
+  <Footer/>
+</div>
+<div v-else>
+  Loading...
+</div>
 </template>
 
 <script>
-// import PoolRecorder from './PoolRecorder'
-// import PoolRecorder from './PoolRecorder.vue';
+import Footer from './components/Footer.vue';
+import Navbar from "./components/Navbar.vue";
+import { mapGetters } from "vuex";
 
 export default {
-  // components: { PoolRecorder },
-  name: "app",
-  created() {
-    // this.$router.push({ path: "/poolrecorder" });
+  components: { Navbar, Footer },
+  computed: {
+    ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
   },
+  name: "app",
 };
 </script>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  height: 100%;
 }
 </style>
