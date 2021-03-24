@@ -3,7 +3,7 @@ var Web3 = require('web3');
 const { assert } = require('chai');
 
 const PoolRecorder = contract.fromArtifact('PoolRecorder'); // Loads a compiled contract
-const SimpleBank = contract.fromArtifact('SimpleBank'); // Loads a compiled contract
+const PoolFactory = contract.fromArtifact('PoolFactory'); // Loads a compiled contract
 
 const [owner, alice, bob, charlie, dean, emily, farah, gina, harry, irina] = accounts;
 
@@ -14,8 +14,8 @@ describe('PoolRecorder', function () {
     });
 
     it('should create new pools from PoolRecorder smarcontract', async () => {
-        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
-        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, alice, { from: alice })
+        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, charlie, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
         assert.equal(listPool.length, 2)
         getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0])
@@ -26,7 +26,7 @@ describe('PoolRecorder', function () {
     });
 
     it('should remove a pool from PoolRecorder smarcontract', async () => {
-        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, alice, { from: alice })
         // addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
         assert.equal(listPool.length, 1)
@@ -38,8 +38,8 @@ describe('PoolRecorder', function () {
     });
 
     it('should remove a pool from PoolRecorder smarcontract', async () => {
-        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, { from: alice })
-        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
+        addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, alice, { from: alice })
+        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, charlie, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
         assert.equal(listPool.length, 2)
         await this.poolRecorder.removePool(listPool[0])

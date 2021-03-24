@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-contract SimpleBank {
+contract PoolFactory {
     bool private isPublic;
     address public owner;
     uint8 private participantCount;

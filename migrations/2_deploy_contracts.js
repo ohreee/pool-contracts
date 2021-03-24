@@ -1,9 +1,9 @@
 const ether = 10**18; // 1 ether = 1000000000000000000 wei
 const wei = 1;
-// var SimpleBank = artifacts.require("SimpleBank");
+// var PoolFactory = artifacts.require("PoolFactory");
 var PoolRecorder = artifacts.require("PoolRecorder");
 
 module.exports = function(deployer) {
-  // deployer.deploy(SimpleBank, false, 0x0);
+  // deployer.deploy(PoolFactory, false, 0x0);
   deployer.deploy(PoolRecorder);
 };

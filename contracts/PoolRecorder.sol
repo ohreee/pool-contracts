@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./SimpleBank.sol";
+import "./PoolFactory.sol";
 
 contract PoolRecorder {
     struct Pool {
@@ -23,7 +23,7 @@ contract PoolRecorder {
         bool _visible,
         address _owner
     ) public returns (address) {
-        SimpleBank newPoolBank = new SimpleBank(true, _owner);
+        PoolFactory newPoolBank = new PoolFactory(true, _owner);
         addPool(
             address(newPoolBank),
             msg.sender,
