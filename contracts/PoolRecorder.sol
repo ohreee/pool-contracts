@@ -26,7 +26,7 @@ contract PoolRecorder {
         PoolFactory newPoolBank = new PoolFactory(true, _owner);
         addPool(
             address(newPoolBank),
-            msg.sender,
+            _owner,
             _name,
             _description,
             _visible
