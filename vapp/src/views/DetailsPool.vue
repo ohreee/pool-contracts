@@ -235,7 +235,7 @@ export default {
         const data = this.getContractData({
             contract: this.$route.query.address,
             method: "balanceParticipant",
-            methodsArgs: "[this.activeAccount]"
+            methodArgs: "[this.activeAccount]"
           });
 
           return data / 10**18;
