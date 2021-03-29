@@ -5,11 +5,10 @@
       <div class="ohr-row ohr-h-100 ohr-no-gutter">
         <div class="ohr-col-8 ohr-h-100 ohr-no-gutter">
           <p class="title">{{ title }}</p>
-        </div>
-        <div class="ohr-col-4 members-log ohr-h-100 ohr-no-gutter">
-          <p class="members-count">
-            {{ description }} {{address_block}}
-          </p>
+          <p class="description">{{ description }}</p>
+          <button :class="'join'" @click="handleClick">
+            {{ "JOIN" }}
+          </button>
         </div>
       </div>
     </div>
@@ -21,10 +20,14 @@ export default {
   props: {
     title: [String],
     description: [String],
-    address_block: [String],
-    address_owner: [String],
-    is_public: [Boolean],
+    image: [String],
+    address: [String]
   },
+    methods: {
+      handleClick(){
+          this.$emit('onClick', this.address);
+      }
+  }
 };
 </script>
 
@@ -50,6 +53,9 @@ export default {
             color: #ffffff
             font-size: 21px
             font-weight: bold
+        .description
+          color: #ffffff
+          font-size: 17px
         .member
             background-color: #fff
             border-radius: 5px

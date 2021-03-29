@@ -1,14 +1,20 @@
 <template>
   <div>
       <p> {{label}}</p>
-      <input/>
+      <input :type="type" @change="handleChange"/>
   </div>
 </template>
 
 <script>
 export default {
     props: {
-        label: [String]
+        label: [String],
+        type: {type: String, default: "text"}
+    },
+    methods: {
+        handleChange(e){
+            this.$emit('onChange', e.target.value);
+        }
     }
 }
 </script>

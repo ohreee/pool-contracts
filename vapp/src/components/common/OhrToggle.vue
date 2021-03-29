@@ -1,7 +1,7 @@
 <template>
   <div>
     <label class="switch">
-      <input type="checkbox" :checked="dataChecked" />
+      <input @change="toggleSwitch" type="checkbox" :checked="dataChecked" />
       <span class="slider round"></span>
     </label>
   </div>
@@ -20,7 +20,8 @@ export default {
 
     methods: {
         toggleSwitch(){
-            this.dataChecked = !this.dataChecked
+            this.dataChecked = !this.dataChecked;
+            this.$emit('onChange', this.dataChecked);
         }
     }
 };

@@ -8,40 +8,26 @@
         </div>
         <div class="ohr-card-container" v-if="!PoolList.length">
           <card
-            title="Uhuru Community
-                  Project"
-            :joined="true"
-            :membersCount="25"
+            title="Title"
+            description="Description"
             image="https://cdn.discordapp.com/attachments/818922919715536909/819624761196806214/img1.png"
           />
         </div>
-        <div class="ohr-card-container" v-if="!PoolList.length">
+          <div
+          class="ohr-card-container"
+          v-for="(address, i) in PoolList"
+          :key="i"
+        >
           <card
-            title="Samira, Saidu
-            and Friends"
-            :joined="false"
-            :membersCount="100"
-            image="https://cdn.discordapp.com/attachments/818922919715536909/819624768385843220/img2.png"
-          />
-        </div>
-        <div class="ohr-card-container" v-if="!PoolList.length">
-          <card
-            title="Samira, Saidu
-                and Friends "
-            :joined="true"
-            :membersCount="90"
+            :title="getPoolInfo(address)[0]"
+            :description="getPoolInfo(address)[1]"
+            :address="getPoolInfo(address)[3]"
             image="https://cdn.discordapp.com/attachments/818922919715536909/819624761196806214/img1.png"
+            @onClick="(e) => goToDetailView(e)"
           />
+          {{getPoolInfo(address)}}
         </div>
-        <div v-for="(address, i) in PoolList" :key="i">
-          <div class="ohr-card-container">
-            <card
-              :address_block="address"
-              :is_public="true"
-              :description="90"
-            />
-          </div>
-        </div>
+        
       </div>
       <button class="ohr-home-view-more">View More</button>
     </div>
@@ -52,10 +38,11 @@
 import { mapGetters } from "vuex";
 import Card from "../components/home/card-pool.vue";
 import Newcard from "../components/home/newcard.vue";
+
 export default {
   components: {
     Card,
-    Newcard,
+    Newcard
   },
   computed: {
     ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
@@ -69,6 +56,21 @@ export default {
         });
         console.log("data", data);
         return data;
+      }
+      return -1;
+    },
+  },
+  methods: {
+    goToDetailView(address) {
+      this.$router.push({path: 'details', query: { address: address }})
+    },
+    getPoolInfo(addressPool) {
+      if (this.isDrizzleInitialized) {
+        var dataKey = this.drizzleInstance.contracts.PoolRecorder.methods.getPoolInfo.cacheCall(
+          addressPool
+        );
+        return this.$store.getters["contracts/contractInstances"].PoolRecorder
+          .getPoolInfo[dataKey].value;
       }
       return -1;
     },

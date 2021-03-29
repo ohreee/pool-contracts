@@ -80,6 +80,10 @@ contract PoolFactory {
         return owner == msg.sender;
     }
 
+    function get_owner() public view returns(address) {
+        return owner;
+    }
+
     function balanceParticipant(address participant)
         public
         view

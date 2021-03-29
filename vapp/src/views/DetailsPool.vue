@@ -7,13 +7,17 @@
             <h1>Uhuru Community Project</h1>
             <div class="ohr-row ohr-no-gutter ohr-details-sub-list">
               <div class="ohr-col-1 ohr-v-center">
-                <p class="ohr-active">MEMBER</p>
+                <p class="ohr-active">
+                  MEMBER
+                </p>
               </div>
               <div class="ohr-header-divider ohr-col-1 ohr-h-center">
                 <div></div>
               </div>
-              <div class="ohr-col-4 ohr-col-sm-6 ohr-v-center">
-                <p class="ohr-inactive">SET RULES</p>
+              <div class="ohr-col-1 ohr-v-center">
+                <p class="ohr-inactive">
+                  {{address}}
+                </p>
               </div>
             </div>
           </div>
@@ -28,27 +32,30 @@
         <div class="ohr-col-4 ohr-col-lg-12 ohr-details-summary">
           <div class="ohr-row ohr-no-gutter ohr-summary-section">
             <div class="ohr-col-6">
-              <p class="ohr-details-summary-data">ETH <span>50</span></p>
-              <p class="ohr-details-summary-info">TARGET</p>
+              <p class="ohr-details-summary-data">ETH <span>
+                {{ balanceParticipant }}
+                </span></p>
+              <p class="ohr-details-summary-info">Your balance</p>
             </div>
             <div class="ohr-col-6">
-              <p class="ohr-details-summary-data">20/07/21</p>
-              <p class="ohr-details-summary-info">DUE<br />DATE</p>
+              <p class="ohr-details-summary-data">ETH <span>{{ depositsBalance }}</span></p>
+              <p class="ohr-details-summary-info-blue">TOTAL<br />POOLED</p>
             </div>
           </div>
           <div class="ohr-row ohr-no-gutter ohr-summary-section">
             <div class="ohr-col-6">
-              <p class="ohr-details-summary-data">ETH <span>15</span></p>
-              <p class="ohr-details-summary-info-blue">TOTAL<br />POOLED</p>
-            </div>
-            <div class="ohr-col-6">
-              <p class="ohr-details-summary-data"><span>15</span></p>
+              <p class="ohr-details-summary-data"><span>{{ getParticipantList.length}}</span></p>
               <p class="ohr-details-summary-info-blue">MEMBERS<br />POOLED</p>
             </div>
           </div>
           <div class="ohr-row">
+          <ohr-input
+            type="number"
+            @onChange="(e) => (amount = e)"
+            label="Amount"
+          />
             <div class="ohr-col-4">
-              <ohr-blue-button text="Deposit" />
+              <ohr-blue-button text="Deposit" @onClick="onClickDepositBtn()"/>
             </div>
             <div class="ohr-col-1"></div>
             <div class="ohr-col-4">
@@ -58,7 +65,7 @@
         </div>
         <div class="ohr-col-4 ohr-col-lg-12 ohr-feed-container">
           <div class="ohr-row ohr-no-gutter ohr-feed-head ohr-v-center">
-            <p>Feed</p>
+            <p>Participant List</p>
             <span class="ohr-hor-line"></span>
           </div>
           <feed-item
@@ -80,31 +87,18 @@
             date="19/02/2021 9:44am"
           />
         </div>
-       </div>
+      </div>
     </div>
     <div class="ohr-mobile">
       <div class="ohr-row ohr-v-center">
         <div
           class="ohr-col-3 ohr-no-gutter ohr-details-mobile-sum ohr-right-border"
         >
-          <p class="ohr-details-summary-data-mobile">ETH <span>50</span></p>
-          <p class="ohr-details-summary-info-mobile">TARGET</p>
-        </div>
-        <div
-          class="ohr-col-3 ohr-no-gutter ohr-details-mobile-sum ohr-right-border"
-        >
           <p class="ohr-details-summary-data-mobile">ETH <span>15</span></p>
           <p class="ohr-details-summary-info-blue-mobile">TOTAL<br />POOLED</p>
         </div>
-
-        <div
-          class="ohr-col-3 ohr-no-gutter ohr-details-mobile-sum ohr-right-border"
-        >
-          <p class="ohr-details-summary-data-mobile">20/07/21</p>
-          <p class="ohr-details-summary-info-mobile">DUE<br />DATE</p>
-        </div>
         <div class="ohr-col-3 ohr-details-mobile-sum ohr-no-gutter">
-          <p class="ohr-details-summary-data-mobile"><span>15</span></p>
+          <p class="ohr-details-summary-data-mobile"><span>{{getParticipantList.length}}</span></p>
           <p class="ohr-details-summary-info-blue-mobile">
             MEMBERS<br />POOLED
           </p>
@@ -167,8 +161,6 @@
             date="19/02/2021 9:44am"
           />
         </div>
-
-        
       </div>
     </div>
   </div>
@@ -180,6 +172,9 @@ import OhrGrayButton from "../components/common/OhrGrayButton.vue";
 import FeedItem from "../components/feed/FeedItem.vue";
 import RemoteMessage from "../components/chat/RemoteMessage.vue";
 import Message from "../components/chat/Message.vue";
+import OhrInput from "../components/common/OhrInput.vue";
+import PoolFactory from "../../../build/contracts/PoolFactory.json";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -188,16 +183,142 @@ export default {
     OhrBlueButton,
     OhrGrayButton,
     FeedItem,
+    OhrInput
   },
   data() {
     return {
       activeTab: 0,
+      amount: 0,
+      address: this.$route.query.address,
     };
+  },
+  computed: {
+    ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
+    ...mapGetters("accounts", ["activeAccount"]),
+    ...mapGetters("contracts", ["getContractData"]),
+  
+    is_owner() {
+    if (this.isDrizzleInitialized) {
+      const data = this.getContractData({
+          contract: this.$route.query.address,
+          method: "is_owner"
+        });
+
+        return data;
+      }
+      return -1;
+    },
+    get_owner() {
+    if (this.isDrizzleInitialized) {
+          const data = this.getContractData({
+              contract: this.$route.query.address,
+              method: "get_owner",
+            });
+
+            return data;
+          }
+          return -1;
+    },
+    getParticipantList() {
+    if (this.isDrizzleInitialized) {
+      const data = this.getContractData({
+          contract: this.$route.query.address,
+          method: "getParticipantList",
+        });
+
+        return data;
+    }
+    return -1;
+    },
+    balanceParticipant() {
+      if (this.isDrizzleInitialized) {
+        const data = this.getContractData({
+            contract: this.$route.query.address,
+            method: "balanceParticipant",
+            methodsArgs: "[this.activeAccount]"
+          });
+
+          return data / 10**18;
+      }
+      return -1;
+    },
+    depositsBalance() {
+      if (this.isDrizzleInitialized) {
+        const data = this.getContractData({
+            contract: this.$route.query.address,
+            method: "depositsBalance",
+          });
+
+          return data / 10**18;
+      }
+      return -1;
+    },
   },
   methods: {
     toggleButton(v) {
       this.activeTab = v;
     },
+    onClickDepositBtn() {
+      this.drizzleInstance.contracts[
+        this.address
+      ].methods.deposit.cacheSend({
+        from: this.activeAccount,
+        value: this.drizzleInstance.web3.utils.toWei(
+          this.amount,
+          "ether"
+        ),
+      });
+    },
+  },
+  created() {
+    // while (!this.isDrizzleInitialized);
+    if (!(this.$route.query.address in this.drizzleInstance.contracts)) {
+      var contractConfig = {
+        contractName: this.$route.query.address,
+        web3Contract: new this.drizzleInstance.web3.eth.Contract(
+          PoolFactory.abi,
+          this.$route.query.address
+        ),
+      };
+    this.drizzleInstance.addContract(contractConfig);
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "is_owner",
+      methodArgs: [], // No args required for this method
+    });
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "getParticipantList",
+      methodArgs: [], // No args required for this method
+    });
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "depositsBalance",
+      methodArgs: [], // No args required for this method
+    });
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "balance",
+      methodArgs: []
+    });
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "get_owner",
+      methodArgs: [], // No args required for this method
+    });
+
+    this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
+      contractName: this.$route.query.address, // i.e. TwistedAuctionMock
+      method: "balanceParticipant",
+      methodArgs: [this.activeAccount] // No args required for this method
+    });
+
+    }
   },
 };
 </script>
@@ -286,95 +407,95 @@ export default {
       border: none
 
 .ohr-details-header
-  background-color: #252E65
-  height: 205px
-  width: 100%
-  border-bottom-left-radius: 20px
-  border-bottom-right-radius: 20px
-  .ohr-details-header-container
+    background-color: #252E65
+    height: 205px
+    width: 100%
+    border-bottom-left-radius: 20px
+    border-bottom-right-radius: 20px
+    .ohr-details-header-container
+        max-width: 1560px
+        margin: auto
+        height: 100%
+    .ohr-details-image
+        height: 145px
+        width: 145px
+    .ohr-header-divider
+        div
+            width: 1px
+            background-color: #D8D8D8
+            height: 30px
+    .ohr-details-header-text
+        display: flex
+        flex-direction: column
+        justify-content: center
+        h1
+            color: #FFFFFF
+            font-size: 49px
+        p
+            color: #ffffff
+            font-size: 22px
+        .ohr-active
+            color: #FFC043
+    .ohr-details-sub-list
+        margin-top: 35px
+.ohr-details-container
     max-width: 1560px
     margin: auto
+    padding: 30px 24px
+    display: flex
+    flex-direction: column
+    justify-content: flex-start
     height: 100%
-    .ohr-details-image
-      height: 145px
-      width: 145px
-    .ohr-header-divider
-      div
-        width: 1px
-        background-color: #D8D8D8
-        height: 30px
-    .ohr-details-header-text
-      display: flex
-      flex-direction: column
-      justify-content: center
-      h1
-        color: #FFFFFF
-        font-size: 49px
-        p
-          color: #ffffff
-          font-size: 22px
-        .ohr-active
-          color: #FFC043
-    .ohr-details-sub-list
-      margin-top: 35px
-.ohr-details-container
-  max-width: 1560px
-  margin: auto
-  padding: 30px 24px
-  display: flex
-  flex-direction: column
-  justify-content: flex-start
-  height: 100%
 
-  .ohr-feed-container
-    padding: 20px 40px
-    border-right: 1px solid #707070
-    height: 500px
-    .ohr-feed-head
-      margin-bottom: 50px
-      .ohr-hor-line
-        height: 1px
-        background-color: #D8D8D8
-        width: 80%
-        margin-left: 8px
+    .ohr-feed-container
+        padding: 20px 40px
+        border-right: 1px solid #707070
+        height: 500px
+        .ohr-feed-head
+            margin-bottom: 50px
+        .ohr-hor-line
+            height: 1px
+            background-color: #D8D8D8
+            width: 80%
+            margin-left: 8px
     .ohr-members-container
-      padding: 20px 20px
-      height: 500px
-      .ohr-hor-line
-        height: 1px
-        background-color: #D8D8D8
-        width: 100%
-        margin-left: 8px
+        padding: 20px 20px
+        height: 500px
+        .ohr-hor-line
+            height: 1px
+            background-color: #D8D8D8
+            width: 100%
+            margin-left: 8px
         .ohr-members-count
-          height: 22px
-          padding: 8px
-          border: 1px solid #707070
-          border-radius: 8px
-          width: 50px
-          font-size: 10px
-          display: flex
-          justify-content: center
-          align-items: center
-          margin-left: 4px
+            height: 22px
+            padding: 8px
+            border: 1px solid #707070
+            border-radius: 8px
+            width: 50px
+            font-size: 10px
+            display: flex
+            justify-content: center
+            align-items: center
+            margin-left: 4px
     .ohr-details-summary
-      border-right: 1px solid #707070
-      height: 500px
+        border-right: 1px solid #707070
+        height: 500px
 
-      .ohr-summary-section
-        align-items: baseline !important
-        margin: 45px 0px
+        .ohr-summary-section
+            align-items: baseline !important
+            margin: 45px 0px
         .ohr-details-summary-data
-          color: #252E65
-          font-size: 23px
-          font-family: 'Lato' !important
-          span
-            font-size: 39px
+            color: #252E65
+            font-size: 23px
+            font-family: 'Lato' !important
+            span
+                font-size: 39px
         .ohr-details-summary-info-blue
-          color: #252E65
-          font-size: 15px
+            color: #252E65
+            font-size: 15px
         .ohr-details-summary-info
-          color: #BC202E
-          font-size: 15px
+            color: #BC202E
+            font-size: 15px
 
 @media only screen and (max-width: 992px)
   .ohr-details-header-text

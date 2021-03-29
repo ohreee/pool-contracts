@@ -19,7 +19,7 @@ export default {
   props: {
     date: [String],
     username: [String],
-    eth: [Number],
+    eth: [String],
     data: [String],
   },
 };

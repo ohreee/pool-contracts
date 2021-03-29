@@ -1,5 +1,5 @@
-// import SimpleBank from '../../build/contracts/SimpleBank.json'
-import PoolRecorder from '../../build/contracts/PoolRecorder.json'
+import PoolRecorder from '../../build/contracts/PoolRecorder.json';
+import PoolFactory from '../../build/contracts/PoolFactory.json';
 
 const options = {
   web3: {
@@ -11,7 +11,7 @@ const options = {
   },
   contracts: [PoolRecorder],
   events: {
-    SimpleBank: ['LogDepositMade']
+    PoolFactory: ['LogDepositMade']
   },
   polls: {
     //check the blockchain every 5s

@@ -3,13 +3,9 @@
     <div class="ohr-profile-container">
       <div class="ohr-row">
         <div class="ohr-col-12 ohr-profile-user-name">
-          <h1>
-            Noble Jang
-          </h1>
+          <h1>Noble Jang</h1>
           <p>
-            <u>
-              Edit Profile
-            </u>
+            <u> Edit Profile </u>
           </p>
         </div>
       </div>
@@ -158,7 +154,7 @@ export default {
 
 <style lang="sass" scoped>
 .profile-mobile-privacy-container, .profile-mobile-details-container
-    min-height: 460px
+  min-height: 460px
 .ohr-profile-container
   max-width: 1560px
   margin: auto
@@ -168,112 +164,112 @@ export default {
   justify-content: flex-start
   height: 100%
 .ohr-profile-user-name
-    margin-bottom: 74px
-    margin-top: 20px
-    h1
-        color: #252E65
-        font-size: 49px
-        font-weight: bold
+  margin-bottom: 74px
+  margin-top: 20px
+  h1
+    color: #252E65
+    font-size: 49px
+    font-weight: bold
     p
-        color: #252E65
-        font-size: 16px
-        margin-top: 13px
-        cursor: pointer
+      color: #252E65
+      font-size: 16px
+      margin-top: 13px
+      cursor: pointer
 .ohr-profile-divider
-    background-color: #707070
-    width: 1px
-    height: 100%
-    min-height: 360px
+  background-color: #707070
+  width: 1px
+  height: 100%
+  min-height: 360px
 .ohr-profile-heading
-    display: flex
-    color: #032C60
-    margin-bottom: 32px
-    align-items: center
-    div
-        background-color: #D8D8D8
-        height: 1px
-        width: 100%
-        margin-left: 16px
+  display: flex
+  color: #032C60
+  margin-bottom: 32px
+  align-items: center
+  div
+    background-color: #D8D8D8
+    height: 1px
+    width: 100%
+    margin-left: 16px
 
 .ohr-profile-widget
-    margin-bottom: 26px
-    h1
-        color: #BC202E
-        font-size: 10px
+  margin-bottom: 26px
+  h1
+    color: #BC202E
+    font-size: 10px
     p
-        color: #252E65
-        font-size: 16px
-        font-weight: bold
-        margin-top: 4px
+      color: #252E65
+      font-size: 16px
+      font-weight: bold
+      margin-top: 4px
 .ohr-privacy-element
-    margin-bottom: 54px
-    display: flex
-    justify-content: space-between
-    h5
-        color: #252E65
-        font-size: 18px
-        font-weight: bold
+  margin-bottom: 54px
+  display: flex
+  justify-content: space-between
+  h5
+    color: #252E65
+    font-size: 18px
+    font-weight: bold
     div
-        p
-            color: #252E65
-            font-size: 12px
+      p
+        color: #252E65
+        font-size: 12px
 
 .profile-mobile-toggle
-    width: 100%
-    margin-bottom: 32px
-    display: none
+  width: 100%
+  margin-bottom: 32px
+  display: none
 .profile-mobile-toggler-container
-    display: flex
-    background-color: #FFFFFF
-    height: 43px
-    width: 178px
-    margin: 0 auto
-    border-radius: 15px
-    align-items: center
-    justify-content: space-evenly
-    .profile-mobile-details, .profile-mobile-privacy
-        color: #032C60
-        cursor: pointer
-        font-size: 15px
+  display: flex
+  background-color: #FFFFFF
+  height: 43px
+  width: 178px
+  margin: 0 auto
+  border-radius: 15px
+  align-items: center
+  justify-content: space-evenly
+  .profile-mobile-details, .profile-mobile-privacy
+    color: #032C60
+    cursor: pointer
+    font-size: 15px
     .profile-mobile-details-active, .profile-mobile-privacy-active
-        background-color: #F3F3F3
-        border-radius: 10px
-        height: 31px
-        display: flex
-        justify-content: center
-        align-items: center
-        cursor: pointer
-        min-width: 70px
+      background-color: #F3F3F3
+      border-radius: 10px
+      height: 31px
+      display: flex
+      justify-content: center
+      align-items: center
+      cursor: pointer
+      min-width: 70px
 @media only screen and (max-width: 992px)
-    .ohr-profile-divider-container
-        display: none
+  .ohr-profile-divider-container
+    display: none
 @media only screen and (max-width: 768px)
-    .profile-desktop-privacy
-        display: none !important
+  .profile-desktop-privacy
+    display: none !important
     .ohr-profile-heading
-        display: none !important
+      display: none !important
     .ohr-profile-user-name
-        margin-bottom: 19px !important
-        margin-top: 0px !important
-        h1
-            text-align: center
-            font-size: 21px
+      margin-bottom: 19px !important
+      margin-top: 0px !important
+      h1
+        text-align: center
+        font-size: 21px
         p
-            text-align: center
-            font-size: 10px
+          text-align: center
+          font-size: 10px
     .profile-mobile-toggle
-        display: block !important
+      display: block !important
 
     .ohr-privacy-element
-        margin-bottom: 37px
-        display: flex
-        justify-content: space-between
-        h5
-            color: #252E65
-            font-size: 14px
-            font-weight: bold
+      margin-bottom: 37px
+      display: flex
+      justify-content: space-between
+      h5
+        color: #252E65
+        font-size: 14px
+        font-weight: bold
         div
-            p
-                color: #252E65
-                font-size: 10px
+          p
+            color: #252E65
+            font-size: 10px
 </style>

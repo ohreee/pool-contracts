@@ -1,5 +1,5 @@
 <template>
-    <button class="ohr-blue-button">
+    <button @click="handleClick" class="ohr-blue-button">
         {{text}}
     </button>
 </template>
@@ -8,6 +8,11 @@
 export default {
     props: {
         text: [String]
+    },
+    methods: {
+        handleClick(){
+            this.$emit('onClick');
+        }
     }
 }
 </script>

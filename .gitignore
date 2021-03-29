@@ -377,3 +377,5 @@ logs
 bin/
 .vscode/
 vapp/src/contracts
+
+secrets.json

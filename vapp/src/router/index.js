@@ -5,7 +5,7 @@ import CreateCooperative from '../views/CreateCooperative.vue';
 import EditCooperative from '../views/EditCooperative.vue';
 import Profile from '../views/Profile.vue';
 import Home from '../views/Home.vue';
-import Details from '../views/Details.vue'
+import Details from '../views/DetailsPool.vue'
 
 
 const routes = [{
@@ -26,7 +26,8 @@ const routes = [{
     },
     {
         path: '/details',
-        component: Details
+        component: Details,
+        props: true
     },
 ]
 
