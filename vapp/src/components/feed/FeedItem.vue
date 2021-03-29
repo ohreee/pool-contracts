@@ -2,9 +2,9 @@
   <div class="ohr-feed-element">
     <div class="ohr-feed-info">
       <p>
-        <span class="ohr-feed-info-eth">{{ eth }} {{" "}} </span>
-        <span class="ohr-feed-info-data">{{ data }} {{" "}}</span>
-        <span class="ohr-feed-info-username"> {{ username }}</span>
+        <!-- <span class="ohr-feed-info-eth">{{ this.balanceParticipant(username) }} {{" "}} </span> -->
+        <span class="ohr-feed-info-data">{{ data }}. {{" "}}</span>
+        <span class="ohr-feed-info-username"> {{ username.substr(0,12) }}...</span>
       </p>
     </div>
 
@@ -15,12 +15,40 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     date: [String],
     username: [String],
     eth: [String],
     data: [String],
+  },
+  computed: {
+    ...mapGetters("drizzle", ["isDrizzleInitialized", "drizzleInstance"]),
+    ...mapGetters("accounts", ["activeAccount"]),
+    ...mapGetters("contracts", ["getContractData"]),
+    balance() {
+      if (this.isDrizzleInitialized) {
+        const dataKey = this.drizzle.contracts[this.$route.query.address].methods.balanceParticipant.cacheCall(this.username)
+         return this.$store.state.contracts.contracts[this.$route.query.address].balanceParticipant[dataKey].value
+      }
+      return -1;
+    },
+  },
+  methods: {
+    balanceParticipant(address) {
+      if (this.isDrizzleInitialized) {
+        const data = this.getContractData({
+            contract: this.$route.query.address,
+            method: "balanceParticipant",
+            methodArgs: "[" + toString(address) + "]"
+          });
+
+          return data / 10**18;
+      }
+      return -1;
+    },
   },
 };
 </script>

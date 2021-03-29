@@ -16,7 +16,7 @@
               </div>
               <div class="ohr-col-1 ohr-v-center">
                 <p class="ohr-inactive">
-                  {{address}}
+                  {{this.$route.query.address}}
                 </p>
               </div>
             </div>
@@ -33,7 +33,7 @@
           <div class="ohr-row ohr-no-gutter ohr-summary-section">
             <div class="ohr-col-6">
               <p class="ohr-details-summary-data">ETH <span>
-                {{ balanceParticipant }}
+                {{ balance }}
                 </span></p>
               <p class="ohr-details-summary-info">Your balance</p>
             </div>
@@ -68,25 +68,17 @@
             <p>Participant List</p>
             <span class="ohr-hor-line"></span>
           </div>
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
+            <ohr-input v-if="is_owner"
+            type="text"
+            @onChange="(e) => (newAddressParticipant = e)"
+            label="Add participant"
           />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
+              <ohr-blue-button v-if="is_owner" text="Enroll" @onClick="onClickAddBtn()"/>
+          <feed-item v-for="(address, i) in getParticipantList"
+            :key="i"
+            :username="address"
+            :data="i"
           />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
-          />
-        </div>
       </div>
     </div>
     <div class="ohr-mobile">
@@ -136,33 +128,10 @@
             data="deposited by"
             date="19/02/2021 9:44am"
           />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
-          />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
-          />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
-          />
-          <feed-item
-            username="@mechaadi"
-            eth="0.50 ETH"
-            data="deposited by"
-            date="19/02/2021 9:44am"
-          />
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -189,7 +158,7 @@ export default {
     return {
       activeTab: 0,
       amount: 0,
-      address: this.$route.query.address,
+      newAddressParticipant: ""
     };
   },
   computed: {
@@ -199,12 +168,7 @@ export default {
   
     is_owner() {
     if (this.isDrizzleInitialized) {
-      const data = this.getContractData({
-          contract: this.$route.query.address,
-          method: "is_owner"
-        });
-
-        return data;
+        return this.get_owner == this.activeAccount;
       }
       return -1;
     },
@@ -230,15 +194,17 @@ export default {
     }
     return -1;
     },
-    balanceParticipant() {
+    balance() {
       if (this.isDrizzleInitialized) {
-        const data = this.getContractData({
-            contract: this.$route.query.address,
-            method: "balanceParticipant",
-            methodArgs: "[this.activeAccount]"
-          });
+        // const data = this.getContractData({
+        //     contract: this.$route.query.address,
+        //     method: "balanceParticipant",
+        //     methodArgs: "["+ this.activeAccount +"]"
+        //   });
 
-          return data / 10**18;
+        //   return data / 10**18;
+        return this.balanceParticipant(this.activeAccount)
+
       }
       return -1;
     },
@@ -260,7 +226,7 @@ export default {
     },
     onClickDepositBtn() {
       this.drizzleInstance.contracts[
-        this.address
+        this.$route.query.address
       ].methods.deposit.cacheSend({
         from: this.activeAccount,
         value: this.drizzleInstance.web3.utils.toWei(
@@ -268,6 +234,25 @@ export default {
           "ether"
         ),
       });
+    },
+    onClickAddBtn() {
+      this.drizzleInstance.contracts[
+        this.$route.query.address
+      ].methods.enroll.cacheSend(this.newAddressParticipant, {
+        from: this.activeAccount
+      });
+    },
+    balanceParticipant(address) {
+      if (this.isDrizzleInitialized) {
+        const data = this.getContractData({
+            contract: this.$route.query.address,
+            method: "balanceParticipant",
+            methodArgs: "[" + toString(address) + "]"
+          });
+
+          return data / 10**18;
+      }
+      return -1;
     },
   },
   created() {
@@ -281,7 +266,7 @@ export default {
         ),
       };
     this.drizzleInstance.addContract(contractConfig);
-
+    }
     this.$store.dispatch("drizzle/REGISTER_CONTRACT", {
       contractName: this.$route.query.address, // i.e. TwistedAuctionMock
       method: "is_owner",
@@ -318,7 +303,7 @@ export default {
       methodArgs: [this.activeAccount] // No args required for this method
     });
 
-    }
+    
   },
 };
 </script>
