@@ -38,7 +38,7 @@ export default {
     return {
       name: "",
       description: "",
-      isPublic: true,
+      isPublic: false,
     };
   },
   computed: {

@@ -59,7 +59,7 @@
             </div>
             <div class="ohr-col-1"></div>
             <div class="ohr-col-4">
-              <ohr-gray-button text="Withdraw" />
+              <ohr-gray-button text="Withdraw" @onClick="onClickWithdrawBtn()"/>
             </div>
           </div>
         </div>
@@ -233,6 +233,16 @@ export default {
           this.amount,
           "ether"
         ),
+      });
+    },
+    onClickWithdrawBtn() {
+      this.drizzleInstance.contracts[
+        this.$route.query.address
+      ].methods.withdraw.cacheSend(this.drizzleInstance.web3.utils.toWei(
+          this.amount,
+          "ether"
+        ) ,{
+        from: this.activeAccount
       });
     },
     onClickAddBtn() {

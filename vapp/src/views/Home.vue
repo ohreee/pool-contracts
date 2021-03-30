@@ -25,7 +25,6 @@
             image="https://cdn.discordapp.com/attachments/818922919715536909/819624761196806214/img1.png"
             @onClick="(e) => goToDetailView(e)"
           />
-          {{getPoolInfo(address)}}
         </div>
         
       </div>

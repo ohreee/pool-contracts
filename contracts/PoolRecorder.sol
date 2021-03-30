@@ -23,7 +23,7 @@ contract PoolRecorder {
         bool _visible,
         address _owner
     ) public returns (address) {
-        PoolFactory newPoolBank = new PoolFactory(true, _owner);
+        PoolFactory newPoolBank = new PoolFactory(_visible, _owner);
         addPool(
             address(newPoolBank),
             _owner,

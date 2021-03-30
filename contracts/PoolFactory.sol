@@ -57,6 +57,7 @@ contract PoolFactory {
         returns (uint256 remainingBal)
     {
         require(exists[msg.sender] == true);
+        require(withdrawAmount <= balances[msg.sender]);
         // Check enough balance available, otherwise just return balance
         if (withdrawAmount <= balances[msg.sender]) {
             balances[msg.sender] -= withdrawAmount;
