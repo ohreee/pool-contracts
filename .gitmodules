@@ -1,0 +1,3 @@
+[submodule "vapp"]
+	path = vapp
+	url = git@github.com:edd34/ohreee.git
