@@ -1,81 +1,85 @@
-# Simple Bank
+# Pool Contracts
 
-This is a modified version of the Simple Bank smart contract example using Solidity. 
-Instead of rewarding all clients, which means that the bank contract should hold all that Ether beforehand,
-it only rewards the 3 first clients with 10 Ether each. 
+Pool Contracts is a project backed by Ohreee. The core idea of a pool is being able to deposit fund in a smartcontract in a collaborative fashion.
 
-Consequently, when deployed, the contract should be fetched 30 Ether and the constructor is payable. 
-To do so for tests, the Truffle deployment script "2_deploy_contracts.js" is:
+The interaction possible within a pool are the following :
+* Deposit fund
+* Withdraw fund
+* Allocate fund to a Defi project in order to yield interest : Aave, MakerDAO, Compound.
 
-```
-const ether = 10**18; // 1 ether = 1000000000000000000 wei
-var SimpleBank = artifacts.require("SimpleBank");
+ There's two features available :
+* Private Pool : only users allowed can interact with your pool. The owner of the pool can add or remove users.
+* Public Pool : everybody can interact with your pool. This is suitable for public project, cooperative, association.
 
-module.exports = function(deployer) {
-  deployer.deploy(SimpleBank, { value: 30 * ether });
-};
-```
+There are 2 main smartcontracts :
+* PoolFactory.sol : this contract will create instance of pool (public or private).
+* PoolRecorder.sol : this contract will help creating and recording instance of pool created through the Dapp.
 
-The contract features an additional method to retrieve all the Ether in the contract.
+## Prerequisite
+We recommend you to install the following tools before starting the project :
+* node, npm, yarn
+* truffle
+* ganache-cli
+* web3
+* git
 
-## Requirements
+## Installation
+1. Use the package manager [yarn](https://pip.pypa.io/en/stable/) to install foobar.
 
-Contract deployment and testing is done via [Truffle](https://truffleframework.com/). To install Truffle:
-
-```
-npm install -g truffle
-```
-
-Note: checked with version
-
-* Truffle v5.0.37 / Solidity v0.5.8
-
-## Deployment and Testing
-
-First, start a local development network:
-
-```
-truffle develop
+```bash
+yarn install
 ```
 
-This will start Truffle Develop at http://127.0.0.1:9545 together with 10 sample accounts.
-
-Then, compile the contracts in a different terminal (truffle develop keeps running the network):
-
-```
-truffle compile
-```
-
-If there are no errors, the contracts can be deployed to the local development network:
-
-```
-truffle migrate
+2. Create a `secrets.json` file at root folder and fill it's content with :
+```json
+{
+    "providerUrl": "",
+    "privateKey": ""
+}
 ```
 
-Finally, they can be tested:
-
+3. [Optional] Initialize the project and it's submodule :
+```bash
+git submodule init && git submodule update
 ```
-truffle test
+
+
+4. Install dependencies on submodule :
+```bash
+cd vapp
+yarn install
 ```
 
-With the following expected output:
-
+## Usage
+### Launching everything
+* Launch a local blockchain with ganache-cli : `ganache-cli`.
+*NB : it's better to specify the same mnemonic in order to control private keys associated to a the mnemonic.*
+* Compile the project : `truffle compile`
+* Migrate the project : `truffle migrate --network development`
+* Launch the frontend server :
+```bash
+cd vapp
+yarn serve
 ```
-Using network 'development'.
 
-  Contract: SimpleBank - basic initialization
-    ✓ should reward 3 first clients with 1 balance (168ms)
-    ✓ should deposit correct amount (63ms)
+### On browser side
+1. Configure Metamask to connect to `localhost:8545`, where the ganache blockchain is running.
 
-  Contract: SimpleBank - proper withdrawal
-    ✓ should withdraw correct amount (63ms)
+2. Configure add an account using it's private key from ganache.
+* Open a console : `truffle console --network development`
 
-  Contract: SimpleBank - incorrect withdrawal
-    ✓ should keep balance unchanged if withdraw greater than balance (73ms)
-
-  Contract: SimpleBank - fallback works
-    ✓ should revert ether sent to this contract through fallback
+You can go to `localhost:8080` and interact with the Dapp.
 
 
-  5 passing (482ms)
-```
+## Test
+Run the following steps in order to tests your product :
+* `truffle compile`
+* `yarn test`
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
