@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-contract PoolFactory {
+import "./compound/Compound.sol";
+
+contract PoolFactory is Compound {
     bool private isPublic;
     address public owner;
     uint8 private participantCount;
