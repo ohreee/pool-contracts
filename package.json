@@ -21,6 +21,7 @@
   "homepage": "https://github.com/rogargon/simple_bank#readme",
   "dependencies": {
     "@openzeppelin/test-environment": "^0.1.9",
+    "@openzeppelin/test-helpers": "^0.5.10",
     "@truffle/hdwallet-provider": "^1.2.4",
     "chai": "^4.3.0",
     "ganache-cli": "^6.12.2",

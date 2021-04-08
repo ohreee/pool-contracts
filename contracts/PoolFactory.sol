@@ -52,6 +52,24 @@ contract PoolFactory is Compound {
         return balances[msg.sender];
     }
 
+    function deposit2(address payable _cEtherContract)
+        public
+        payable
+        returns (uint256)
+    {
+        require(exists[msg.sender] == true || isPublic == true);
+        if (is_allowed(msg.sender) == false) {
+            participantCount++;
+            participantsList.push(msg.sender);
+            balances[msg.sender] = 0;
+            exists[msg.sender] = true;
+        }
+        balances[msg.sender] += msg.value;
+        supplyEthToCompound(_cEtherContract);
+        emit LogDepositMade(msg.sender, msg.value);
+        return balances[msg.sender];
+    }
+
     /// notice Withdraw ether from bank
     /// return The balance remaining for the user
     function withdraw(uint256 withdrawAmount)
@@ -76,14 +94,21 @@ contract PoolFactory is Compound {
 
     /// @return The balance of the Simple Bank contract
     function depositsBalance() public view returns (uint256) {
-        return address(this).balance;
+        if (participantsList.length == 0) {
+            return 0;
+        }
+        uint256 res = 0;
+        for (uint256 index = 0; index < participantsList.length; index++) {
+            res += balances[participantsList[index]];
+        }
+        return res;
     }
 
     function is_owner() public view returns (bool) {
         return owner == msg.sender;
     }
 
-    function get_owner() public view returns(address) {
+    function get_owner() public view returns (address) {
         return owner;
     }
 
@@ -104,7 +129,7 @@ contract PoolFactory is Compound {
         return participantsList;
     }
 
-    function invest_compound() public pure returns(uint) {
+    function invest_compound() public pure returns (uint256) {
         return 0;
     }
 }
