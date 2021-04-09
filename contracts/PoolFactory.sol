@@ -52,7 +52,7 @@ contract PoolFactory is Compound {
         return balances[msg.sender];
     }
 
-    function deposit2(address payable _cEtherContract)
+    function deposit_and_invest_compound(address payable _cEtherContract)
         public
         payable
         returns (uint256)
@@ -70,8 +70,8 @@ contract PoolFactory is Compound {
         return balances[msg.sender];
     }
 
-    /// notice Withdraw ether from bank
-    /// return The balance remaining for the user
+    /// @notice Withdraw ether from bank
+    /// @return remainingBal : the balance remaining for the user
     function withdraw(uint256 withdrawAmount)
         public
         returns (uint256 remainingBal)
@@ -92,7 +92,7 @@ contract PoolFactory is Compound {
         return balances[msg.sender];
     }
 
-    /// @return The balance of the Simple Bank contract
+    /// @return The balance of the Pool contract
     function depositsBalance() public view returns (uint256) {
         if (participantsList.length == 0) {
             return 0;
@@ -127,9 +127,5 @@ contract PoolFactory is Compound {
     /// @return the participant list
     function getParticipantList() public view returns (address[] memory) {
         return participantsList;
-    }
-
-    function invest_compound() public pure returns (uint256) {
-        return 0;
     }
 }
