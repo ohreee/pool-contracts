@@ -28,8 +28,8 @@ contract PoolFactory is Compound {
     /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
     function enroll(address participant) public returns (uint256) {
-        require(msg.sender == owner);
-        require(exists[participant] == false);
+        require(msg.sender == owner, "Not authorized");
+        require(exists[participant] == false, "Already enrolled");
         participantCount++;
         participantsList.push(participant);
         balances[participant] = 0;
@@ -40,7 +40,7 @@ contract PoolFactory is Compound {
     /// @notice Deposit ether into bank, requires method is "payable"
     /// @return The balance of the user after the deposit is made
     function deposit() public payable returns (uint256) {
-        require(exists[msg.sender] == true || isPublic == true);
+        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
         if (is_allowed(msg.sender) == false) {
             participantCount++;
             participantsList.push(msg.sender);
@@ -57,7 +57,7 @@ contract PoolFactory is Compound {
         payable
         returns (uint256)
     {
-        require(exists[msg.sender] == true || isPublic == true);
+        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
         if (is_allowed(msg.sender) == false) {
             participantCount++;
             participantsList.push(msg.sender);
@@ -76,8 +76,8 @@ contract PoolFactory is Compound {
         public
         returns (uint256 remainingBal)
     {
-        require(exists[msg.sender] == true);
-        require(withdrawAmount <= balances[msg.sender]);
+        require(exists[msg.sender] == true, "Not allowed");
+        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
         // Check enough balance available, otherwise just return balance
         if (withdrawAmount <= balances[msg.sender]) {
             balances[msg.sender] -= withdrawAmount;
