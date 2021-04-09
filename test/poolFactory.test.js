@@ -31,9 +31,6 @@ describe("PoolFactory", () => {
     await pool.enroll(aslan, { from: chairperson });
     const aslanBalance = await pool.balance({ from: aslan });
     assert.equal(aslanBalance, 0, "initial balance is incorrect");
-
-    // const depositsBalance = await pool.depositsBalance();
-    // assert.equal(depositsBalance.toNumber(), initialDepositsBalance, "initial balance is incorrect");
   });
 
   it("should deposit correct amount", async () => {
