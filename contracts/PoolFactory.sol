@@ -86,6 +86,22 @@ contract PoolFactory is Compound {
         return balances[msg.sender];
     }
 
+    function withdraw_and_redeem(uint256 withdrawAmount, bool redeemType,
+        address _cEtherContract)
+        public
+        returns (uint256 remainingBal)
+    {
+        require(exists[msg.sender] == true, "Not allowed");
+        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
+        // Check enough balance available, otherwise just return balance
+        redeemCEth(withdrawAmount, redeemType, _cEtherContract);
+        if (withdrawAmount <= balances[msg.sender]) {
+            balances[msg.sender] -= withdrawAmount;
+            payable(msg.sender).transfer(withdrawAmount);
+        }
+        return balances[msg.sender];
+    }
+
     /// @notice Just reads balance of the account requesting, so "constant"
     /// @return The balance of the user
     function balance() public view returns (uint256) {
