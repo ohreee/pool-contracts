@@ -128,6 +128,10 @@ contract PoolFactory is Compound {
         return owner;
     }
 
+    function is_public() public view returns(bool) {
+        return isPublic;
+    }
+
     function balanceParticipant(address participant)
         public
         view
