@@ -1,5 +1,5 @@
 {
-  "name": "simple_bank",
+  "name": "pool-contracts",
   "description": "This is a modified version of the Simple Bank smart contract example using Solidity.  Instead of rewarding all clients, which means that the bank contract should hold all that Ether beforehand, it only rewards the 3 first clients with 10 Ether each.",
   "version": "1.0.0",
   "main": "truffle-config.js",
@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --timeout 10000 --exit --recursive"
+    "test": "mocha --no-timeout --exit --recursive"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/rogargon/simple_bank#readme",
   "dependencies": {
     "@openzeppelin/test-environment": "^0.1.9",
+    "@openzeppelin/test-helpers": "^0.5.10",
     "@truffle/hdwallet-provider": "^1.2.4",
     "chai": "^4.3.0",
     "ganache-cli": "^6.12.2",

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-contract PoolFactory {
+import "./compound/Compound.sol";
+
+contract PoolFactory is Compound {
     bool private isPublic;
     address public owner;
     uint8 private participantCount;
@@ -26,8 +28,8 @@ contract PoolFactory {
     /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
     function enroll(address participant) public returns (uint256) {
-        require(msg.sender == owner);
-        require(exists[participant] == false);
+        require(msg.sender == owner, "Not authorized");
+        require(exists[participant] == false, "Already enrolled");
         participantCount++;
         participantsList.push(participant);
         balances[participant] = 0;
@@ -38,7 +40,7 @@ contract PoolFactory {
     /// @notice Deposit ether into bank, requires method is "payable"
     /// @return The balance of the user after the deposit is made
     function deposit() public payable returns (uint256) {
-        require(exists[msg.sender] == true || isPublic == true);
+        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
         if (is_allowed(msg.sender) == false) {
             participantCount++;
             participantsList.push(msg.sender);
@@ -50,15 +52,49 @@ contract PoolFactory {
         return balances[msg.sender];
     }
 
-    /// notice Withdraw ether from bank
-    /// return The balance remaining for the user
+    function deposit_and_invest_compound(address payable _cEtherContract)
+        public
+        payable
+        returns (uint256)
+    {
+        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
+        if (is_allowed(msg.sender) == false) {
+            participantCount++;
+            participantsList.push(msg.sender);
+            balances[msg.sender] = 0;
+            exists[msg.sender] = true;
+        }
+        balances[msg.sender] += msg.value;
+        supplyEthToCompound(_cEtherContract);
+        emit LogDepositMade(msg.sender, msg.value);
+        return balances[msg.sender];
+    }
+
+    /// @notice Withdraw ether from bank
+    /// @return remainingBal : the balance remaining for the user
     function withdraw(uint256 withdrawAmount)
         public
         returns (uint256 remainingBal)
     {
-        require(exists[msg.sender] == true);
-        require(withdrawAmount <= balances[msg.sender]);
+        require(exists[msg.sender] == true, "Not allowed");
+        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
         // Check enough balance available, otherwise just return balance
+        if (withdrawAmount <= balances[msg.sender]) {
+            balances[msg.sender] -= withdrawAmount;
+            payable(msg.sender).transfer(withdrawAmount);
+        }
+        return balances[msg.sender];
+    }
+
+    function withdraw_and_redeem(uint256 withdrawAmount, bool redeemType,
+        address _cEtherContract)
+        public
+        returns (uint256 remainingBal)
+    {
+        require(exists[msg.sender] == true, "Not allowed");
+        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
+        // Check enough balance available, otherwise just return balance
+        redeemCEth(withdrawAmount, redeemType, _cEtherContract);
         if (withdrawAmount <= balances[msg.sender]) {
             balances[msg.sender] -= withdrawAmount;
             payable(msg.sender).transfer(withdrawAmount);
@@ -72,17 +108,28 @@ contract PoolFactory {
         return balances[msg.sender];
     }
 
-    /// @return The balance of the Simple Bank contract
+    /// @return The balance of the Pool contract
     function depositsBalance() public view returns (uint256) {
-        return address(this).balance;
+        if (participantsList.length == 0) {
+            return 0;
+        }
+        uint256 res = 0;
+        for (uint256 index = 0; index < participantsList.length; index++) {
+            res += balances[participantsList[index]];
+        }
+        return res;
     }
 
     function is_owner() public view returns (bool) {
         return owner == msg.sender;
     }
 
-    function get_owner() public view returns(address) {
+    function get_owner() public view returns (address) {
         return owner;
+    }
+
+    function is_public() public view returns(bool) {
+        return isPublic;
     }
 
     function balanceParticipant(address participant)
@@ -100,9 +147,5 @@ contract PoolFactory {
     /// @return the participant list
     function getParticipantList() public view returns (address[] memory) {
         return participantsList;
-    }
-
-    function invest_compound() public pure returns(uint) {
-        return 0;
     }
 }
