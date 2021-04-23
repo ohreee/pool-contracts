@@ -4,9 +4,10 @@ pragma solidity >=0.8.0;
 import "./compound/Compound.sol";
 
 contract PoolFactory is Compound {
-    bool private isPublic;
+    bool public isPublic;
     address public owner;
-    uint8 private participantCount;
+    bytes32 public title;
+    bytes32 public description;
     address[] public participantsList;
     mapping(address => uint256) public balances;
     mapping(address => bool) public exists;
@@ -14,13 +15,14 @@ contract PoolFactory is Compound {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    constructor(bool _isPublic, address _owner) {
+    constructor(bool _isPublic, address _owner, bytes32 _title,bytes32 _description) {
         /* Set the owner to the creator of this contract */
         isPublic = _isPublic;
         owner = _owner;
+        title = _title;
+        description = _description;
         balances[owner] = 0;
         exists[owner] = true;
-        participantCount = 0;
         participantsList.push(owner);
     }
 
@@ -30,7 +32,6 @@ contract PoolFactory is Compound {
     function enroll(address participant) public returns (uint256) {
         require(msg.sender == owner, "Not authorized");
         require(exists[participant] == false, "Already enrolled");
-        participantCount++;
         participantsList.push(participant);
         balances[participant] = 0;
         exists[participant] = true;
@@ -42,7 +43,6 @@ contract PoolFactory is Compound {
     function deposit() public payable returns (uint256) {
         require(exists[msg.sender] == true || isPublic == true, "Not allowed");
         if (is_allowed(msg.sender) == false) {
-            participantCount++;
             participantsList.push(msg.sender);
             balances[msg.sender] = 0;
             exists[msg.sender] = true;
@@ -59,7 +59,6 @@ contract PoolFactory is Compound {
     {
         require(exists[msg.sender] == true || isPublic == true, "Not allowed");
         if (is_allowed(msg.sender) == false) {
-            participantCount++;
             participantsList.push(msg.sender);
             balances[msg.sender] = 0;
             exists[msg.sender] = true;
@@ -147,5 +146,9 @@ contract PoolFactory is Compound {
     /// @return the participant list
     function getParticipantList() public view returns (address[] memory) {
         return participantsList;
+    }
+
+    function getPoolInfo() public view returns(bytes32, bytes32, address, uint) {
+        return (title, description, owner, participantsList.length);
     }
 }

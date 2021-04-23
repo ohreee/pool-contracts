@@ -2,64 +2,20 @@
 pragma solidity >=0.8.0;
 
 import "./PoolFactory.sol";
+import "./IPoolFactory.sol";
 
 contract PoolRecorder {
-    struct Pool {
-        string name;
-        string description;
-        address owner;
-        address PoolAddress;
-        bool visible;
-    }
-
     address[] poolList;
-    mapping(address => Pool) public poolRecorded;
-
     event PoolAdded(address poolAddress);
 
     function createPool(
-        string memory _name,
-        string memory _description,
+        bytes32 _name,
+        bytes32 _description,
         bool _visible,
         address _owner
     ) public returns (address) {
-        PoolFactory newPoolBank = new PoolFactory(_visible, _owner);
-        addPool(
-            address(newPoolBank),
-            _owner,
-            _name,
-            _description,
-            _visible
-        );
+        PoolFactory newPoolBank = new PoolFactory(_visible, _owner, _name, _description);
         return address(newPoolBank);
-    }
-
-    function addPool(
-        address poolAddress,
-        address _owner,
-        string memory _name,
-        string memory _description,
-        bool _visible
-    ) private {
-        poolList.push(poolAddress);
-        poolRecorded[poolAddress] = Pool(
-            _name,
-            _description,
-            _owner,
-            poolAddress,
-            _visible
-        );
-        emit PoolAdded(poolAddress);
-    }
-
-    function removePool(address poolAddress) public {
-        for (uint256 index = 0; index < poolList.length; index++) {
-            if (poolList[index] == poolAddress) {
-                poolList[index] = poolList[poolList.length - 1];
-                delete poolList[poolList.length - 1];
-                break;
-            }
-        }
     }
 
     function getListPools() public view returns (address[] memory) {
@@ -68,9 +24,9 @@ contract PoolRecorder {
 
     function getPoolInfo(address poolAddress)
         public
-        view
-        returns (Pool memory)
+        returns (bytes32, bytes32, address, uint)
     {
-        return poolRecorded[poolAddress];
+        IPoolFactory pool = IPoolFactory(poolAddress);
+        return pool.getPoolInfo();
     }
 }

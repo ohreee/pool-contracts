@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-interface PoolFactory{
+interface IPoolFactory{
     function enroll(address participant) external returns (uint256);
     function deposit() external payable returns (uint256);
     function deposit_and_invest_compound(address payable _cEtherContract) external payable returns (uint256);
@@ -15,4 +15,5 @@ interface PoolFactory{
     function balanceParticipant(address participant) external returns (uint256);
     function is_allowed(address participant) external returns (bool);
     function getParticipantList() external returns (address[] memory);
+    function getPoolInfo() external returns(bytes32, bytes32, address, uint);
 }
