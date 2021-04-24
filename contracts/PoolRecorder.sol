@@ -9,12 +9,13 @@ contract PoolRecorder {
     event PoolAdded(address poolAddress);
 
     function createPool(
-        bytes32 _name,
-        bytes32 _description,
+        string memory _name,
+        string memory _description,
         bool _visible,
         address _owner
     ) public returns (address) {
         PoolFactory newPoolBank = new PoolFactory(_visible, _owner, _name, _description);
+        poolList.push(address(newPoolBank));
         return address(newPoolBank);
     }
 
@@ -24,7 +25,8 @@ contract PoolRecorder {
 
     function getPoolInfo(address poolAddress)
         public
-        returns (bytes32, bytes32, address, uint)
+        view
+        returns (string memory, string memory, address,bool, uint)
     {
         IPoolFactory pool = IPoolFactory(poolAddress);
         return pool.getPoolInfo();

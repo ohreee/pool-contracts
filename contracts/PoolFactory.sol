@@ -6,8 +6,8 @@ import "./compound/Compound.sol";
 contract PoolFactory is Compound {
     bool public isPublic;
     address public owner;
-    bytes32 public title;
-    bytes32 public description;
+    string public title;
+    string public description;
     address[] public participantsList;
     mapping(address => uint256) public balances;
     mapping(address => bool) public exists;
@@ -15,7 +15,7 @@ contract PoolFactory is Compound {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    constructor(bool _isPublic, address _owner, bytes32 _title,bytes32 _description) {
+    constructor(bool _isPublic, address _owner, string memory _title,string memory _description) {
         /* Set the owner to the creator of this contract */
         isPublic = _isPublic;
         owner = _owner;
@@ -148,7 +148,7 @@ contract PoolFactory is Compound {
         return participantsList;
     }
 
-    function getPoolInfo() public view returns(bytes32, bytes32, address, uint) {
-        return (title, description, owner, participantsList.length);
+    function getPoolInfo() public view returns(string memory, string memory, address, bool, uint) {
+        return (title, description, owner, isPublic, participantsList.length);
     }
 }
