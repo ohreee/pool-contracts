@@ -19,6 +19,16 @@ contract PoolRecorder {
         return address(newPoolBank);
     }
 
+    function removePool(address poolAddress) public {
+        for (uint256 index = 0; index < poolList.length; index++) {
+            if (poolList[index] == poolAddress) {
+                poolList[index] = poolList[poolList.length - 1];
+                delete poolList[poolList.length - 1];
+                break;
+            }
+        }
+    }
+
     function getListPools() public view returns (address[] memory) {
         return poolList;
     }
