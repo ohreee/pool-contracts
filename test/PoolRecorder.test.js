@@ -15,14 +15,14 @@ describe('PoolRecorder', function () {
 
     it('should create new pools from PoolRecorder smarcontract', async () => {
         addressAlicePool = await this.poolRecorder.createPool("alice's pool", "pool for alice and friends", true, alice, { from: alice })
-        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, charlie, { from: charlie })
+        addressMyDefiPool = await this.poolRecorder.createPool("MyDefi pool", "MyDefi is a new defi project that have a great impact", true, charlie, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
         assert.equal(listPool.length, 2)
-        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0])
-        assert.equal(getPoolInfoAlice.name, "alice\'s pool")
-        assert.equal(getPoolInfoAlice.description, "pool for alice and friends")
-        assert.equal(getPoolInfoAlice.visible, true)
-        assert.equal(getPoolInfoAlice.owner, alice)
+        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0], {from: owner})
+        assert.equal(getPoolInfoAlice[0], "alice's pool")
+        assert.equal(getPoolInfoAlice[1], "pool for alice and friends")
+        assert.equal(getPoolInfoAlice[3], true)
+        assert.equal(getPoolInfoAlice[2], alice)
     });
 
     it('should remove a pool from PoolRecorder smarcontract', async () => {
@@ -30,11 +30,11 @@ describe('PoolRecorder', function () {
         // addressMyDefiPool = await this.poolRecorder.createPool("MyDefi's pool", "MyDefi is a new defi project that have a great impact", true, { from: charlie })
         const listPool = await this.poolRecorder.getListPools()
         assert.equal(listPool.length, 1)
-        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0])
-        assert.equal(getPoolInfoAlice.name, "alice\'s pool")
-        assert.equal(getPoolInfoAlice.description, "pool for alice and friends")
-        assert.equal(getPoolInfoAlice.visible, true)
-        assert.equal(getPoolInfoAlice.owner, alice)
+        getPoolInfoAlice = await this.poolRecorder.getPoolInfo(listPool[0], {from: owner})
+        assert.equal(getPoolInfoAlice[0], "alice\'s pool")
+        assert.equal(getPoolInfoAlice[1], "pool for alice and friends")
+        assert.equal(getPoolInfoAlice[3], true)
+        assert.equal(getPoolInfoAlice[2], alice)
     });
 
     it('should remove a pool from PoolRecorder smarcontract', async () => {
