@@ -28,10 +28,10 @@ contract Aave {
 
     function depositToken(uint amount, address _erc20_token, address _aaveLendingPool) public approveBeforeDeposit(_erc20_token, _aaveLendingPool) {
         IERC20 erc20_token = IERC20(_erc20_token);
-        IAaveLendingPool iAaveLendingPool = IAaveLendingPool(_aaveLendingPool);
+        IAaveLendingPool aaveLendingPool = IAaveLendingPool(_aaveLendingPool);
         userDepositedToken[msg.sender] += amount;
         require(erc20_token.transferFrom(msg.sender, address(this), amount), "DAI Transfer failed!");
-        iAaveLendingPool.deposit(address(erc20_token), amount, 0);
+        aaveLendingPool.deposit(address(erc20_token), amount, 0);
     }
     
 }
