@@ -18,17 +18,20 @@ interface IAaveLendingPool {
 }
 
 contract Aave {
-    mapping(address => uint256) userDepositedToken;
-    mapping(address => bool) tokenAllowed;
+    struct Token {
+        mapping(address => uint256) DepositedToken;
+        mapping(address => bool) Allowed;
+    }
+    mapping(address => Token) userBalance;
 
     modifier approveBeforeDeposit(
         address erc20_token,
         address aaveLendingPool
     ) {
-        if (tokenAllowed[msg.sender] == false) {
+        if (userBalance[msg.sender].Allowed[erc20_token] == false) {
             IERC20 ierc20_token = IERC20(erc20_token);
             ierc20_token.approve(address(aaveLendingPool), type(uint256).max);
-            tokenAllowed[msg.sender] = true;
+            userBalance[msg.sender].Allowed[erc20_token] = true;
         }
         _;
     }
@@ -40,7 +43,7 @@ contract Aave {
     ) public approveBeforeDeposit(_erc20_token, _aaveLendingPool) {
         IERC20 erc20_token = IERC20(_erc20_token);
         IAaveLendingPool aaveLendingPool = IAaveLendingPool(_aaveLendingPool);
-        userDepositedToken[msg.sender] += amount;
+        userBalance[msg.sender].DepositedToken[_erc20_token] += amount;
         require(
             erc20_token.transferFrom(msg.sender, address(this), amount),
             "DAI Transfer failed!"
