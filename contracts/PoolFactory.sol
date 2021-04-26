@@ -15,7 +15,12 @@ contract PoolFactory is Compound {
     // Log the event about a deposit being made by an address and its amount
     event LogDepositMade(address indexed accountAddress, uint256 amount);
 
-    constructor(bool _isPublic, address _owner, string memory _title,string memory _description) {
+    constructor(
+        bool _isPublic,
+        address _owner,
+        string memory _title,
+        string memory _description
+    ) {
         /* Set the owner to the creator of this contract */
         isPublic = _isPublic;
         owner = _owner;
@@ -26,11 +31,42 @@ contract PoolFactory is Compound {
         participantsList.push(owner);
     }
 
+    modifier onlyOwnerOrPublic() {
+        require(msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized");
+        _;
+    }
+
+    modifier autoEnroll() {
+        if (is_allowed(msg.sender) == false) {
+            participantsList.push(msg.sender);
+            balances[msg.sender] = 0;
+            exists[msg.sender] = true;
+        }
+        _;
+    }
+
+    modifier onlyEnrolled() {
+        require(exists[msg.sender] == true, "Not allowed");
+        _;
+    }
+
+    modifier sufficentBalanceCheck(uint256 withdrawAmount) {
+        require(
+            withdrawAmount <= balances[msg.sender],
+            "Error amount, can't withdraw more than deposit"
+        );
+        _;
+    }
+
     /// @notice Enroll a customer with the bank,
     /// Only the owner can enroll a participant
     /// @return The balance of the user after enrolling
-    function enroll(address participant) public returns (uint256) {
-        require(msg.sender == owner, "Not authorized");
+    function enroll(address participant) public onlyOwner returns (uint256) {
         require(exists[participant] == false, "Already enrolled");
         participantsList.push(participant);
         balances[participant] = 0;
@@ -40,13 +76,13 @@ contract PoolFactory is Compound {
 
     /// @notice Deposit ether into bank, requires method is "payable"
     /// @return The balance of the user after the deposit is made
-    function deposit() public payable returns (uint256) {
-        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
-        if (is_allowed(msg.sender) == false) {
-            participantsList.push(msg.sender);
-            balances[msg.sender] = 0;
-            exists[msg.sender] = true;
-        }
+    function deposit()
+        public
+        payable
+        onlyOwnerOrPublic
+        autoEnroll
+        returns (uint256)
+    {
         balances[msg.sender] += msg.value;
         emit LogDepositMade(msg.sender, msg.value);
         return balances[msg.sender];
@@ -55,14 +91,10 @@ contract PoolFactory is Compound {
     function deposit_and_invest_compound(address payable _cEtherContract)
         public
         payable
+        onlyOwnerOrPublic
+        autoEnroll
         returns (uint256)
     {
-        require(exists[msg.sender] == true || isPublic == true, "Not allowed");
-        if (is_allowed(msg.sender) == false) {
-            participantsList.push(msg.sender);
-            balances[msg.sender] = 0;
-            exists[msg.sender] = true;
-        }
         balances[msg.sender] += msg.value;
         supplyEthToCompound(_cEtherContract);
         emit LogDepositMade(msg.sender, msg.value);
@@ -73,31 +105,29 @@ contract PoolFactory is Compound {
     /// @return remainingBal : the balance remaining for the user
     function withdraw(uint256 withdrawAmount)
         public
+        onlyEnrolled
+        sufficentBalanceCheck(withdrawAmount)
         returns (uint256 remainingBal)
     {
-        require(exists[msg.sender] == true, "Not allowed");
-        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
-        // Check enough balance available, otherwise just return balance
-        if (withdrawAmount <= balances[msg.sender]) {
-            balances[msg.sender] -= withdrawAmount;
-            payable(msg.sender).transfer(withdrawAmount);
-        }
+        balances[msg.sender] -= withdrawAmount;
+        payable(msg.sender).transfer(withdrawAmount);
         return balances[msg.sender];
     }
 
-    function withdraw_and_redeem(uint256 withdrawAmount, bool redeemType,
-        address _cEtherContract)
+    function withdraw_and_redeem(
+        uint256 withdrawAmount,
+        bool redeemType,
+        address _cEtherContract
+    )
         public
+        onlyEnrolled
+        sufficentBalanceCheck(withdrawAmount)
         returns (uint256 remainingBal)
     {
-        require(exists[msg.sender] == true, "Not allowed");
-        require(withdrawAmount <= balances[msg.sender], "Error amount, can't withdraw more than deposit");
         // Check enough balance available, otherwise just return balance
         redeemCEth(withdrawAmount, redeemType, _cEtherContract);
-        if (withdrawAmount <= balances[msg.sender]) {
-            balances[msg.sender] -= withdrawAmount;
-            payable(msg.sender).transfer(withdrawAmount);
-        }
+        balances[msg.sender] -= withdrawAmount;
+        payable(msg.sender).transfer(withdrawAmount);
         return balances[msg.sender];
     }
 
@@ -127,7 +157,7 @@ contract PoolFactory is Compound {
         return owner;
     }
 
-    function is_public() public view returns(bool) {
+    function is_public() public view returns (bool) {
         return isPublic;
     }
 
@@ -148,7 +178,17 @@ contract PoolFactory is Compound {
         return participantsList;
     }
 
-    function getPoolInfo() public view returns(string memory, string memory, address, bool, uint) {
+    function getPoolInfo()
+        public
+        view
+        returns (
+            string memory,
+            string memory,
+            address,
+            bool,
+            uint256
+        )
+    {
         return (title, description, owner, isPublic, participantsList.length);
     }
 }
