@@ -50,4 +50,13 @@ contract Aave {
         );
         aaveLendingPool.deposit(address(erc20_token), amount, 0);
     }
+
+    function withdrawToken(uint256 _amountInDai) external {
+        require(userDepositedDai[msg.sender] >= _amountInDai, "You cannot withdraw more than deposited!");
+
+        aToken.redeem(_amountInDai);
+        require(dai.transferFrom(address(this), msg.sender, _amountInDai), "DAI Transfer failed!");
+        
+        userDepositedDai[msg.sender] = userDepositedDai[msg.sender] - _amountInDai;
+    }
 }
