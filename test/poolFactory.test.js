@@ -11,7 +11,7 @@ const [chairperson, alice, bob, charlie, danny] = accounts;
 describe("PoolFactory", () => {
 
   it("enroll everyone", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "title", "description", { from: chairperson });
     assert.isTrue(await pool.is_owner({ from: chairperson }))
 
     await pool.enroll(alice, { from: chairperson });
@@ -29,10 +29,18 @@ describe("PoolFactory", () => {
     await pool.enroll(danny, { from: chairperson });
     const dannyBalance = await pool.balance({ from: danny });
     assert.equal(dannyBalance, 0, "initial balance is incorrect");
+
+    const poolInfo = await pool.getPoolInfo({from: chairperson});
+    assert.equal(poolInfo[0], "title")
+    assert.equal(poolInfo[1], "description")
+    assert.equal(poolInfo[2], chairperson)
+    assert.equal(poolInfo[3], false)
+    assert.equal(poolInfo[4].toNumber(), 5)
+    
   });
 
   it("should deposit correct amount", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "0x"+"title", "description", { from: chairperson });
     const deposit = 1.5 * ether;
     await pool.enroll(alice, { from: chairperson });
     const receipt = await pool.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
@@ -52,7 +60,7 @@ describe("PoolFactory", () => {
   });
 
   it("should not deposit if not enrolled", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "0x"+"title", "description", { from: chairperson });
     const deposit = 1.5 * ether;
 
     await expectRevert(
@@ -62,7 +70,7 @@ describe("PoolFactory", () => {
   });
 
   it("should withdraw correct amount", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "0x"+"title", "description", { from: chairperson });
     const deposit = 5 * ether;
 
     await pool.enroll(alice, { from: chairperson });
@@ -78,7 +86,7 @@ describe("PoolFactory", () => {
   });
 
   it("should keep balance unchanged if withdraw greater than balance", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "0x"+"title", "description", { from: chairperson });
     const deposit = 3 * ether;
 
     await pool.enroll(alice, { from: chairperson });
@@ -93,7 +101,7 @@ describe("PoolFactory", () => {
   });
 
   it("should revert ether sent to this contract through fallback", async () => {
-    pool = await PoolFactory.new(false, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(false, chairperson, "0x"+"title", "description", { from: chairperson });
     const deposit = 3 * ether;
 
     const first_balance = await balance.current(alice);
@@ -109,7 +117,7 @@ describe("PoolFactory", () => {
   });
 
   it("should allow depost if pool is public", async () => {
-    pool = await PoolFactory.new(true, chairperson, { from: chairperson });
+    pool = await PoolFactory.new(true, chairperson, "title", "description", { from: chairperson });
     const deposit = 3 * ether;
     await pool.deposit({ from: alice, value: Web3.utils.toBN(deposit) });
     await pool.deposit({ from: bob, value: Web3.utils.toBN(deposit) });

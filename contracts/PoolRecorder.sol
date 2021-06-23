@@ -2,19 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "./PoolFactory.sol";
+import "./IPoolFactory.sol";
 
 contract PoolRecorder {
-    struct Pool {
-        string name;
-        string description;
-        address owner;
-        address PoolAddress;
-        bool visible;
-    }
-
     address[] poolList;
-    mapping(address => Pool) public poolRecorded;
-
     event PoolAdded(address poolAddress);
 
     function createPool(
@@ -23,33 +14,9 @@ contract PoolRecorder {
         bool _visible,
         address _owner
     ) public returns (address) {
-        PoolFactory newPoolBank = new PoolFactory(_visible, _owner);
-        addPool(
-            address(newPoolBank),
-            _owner,
-            _name,
-            _description,
-            _visible
-        );
+        PoolFactory newPoolBank = new PoolFactory(_visible, _owner, _name, _description);
+        poolList.push(address(newPoolBank));
         return address(newPoolBank);
-    }
-
-    function addPool(
-        address poolAddress,
-        address _owner,
-        string memory _name,
-        string memory _description,
-        bool _visible
-    ) private {
-        poolList.push(poolAddress);
-        poolRecorded[poolAddress] = Pool(
-            _name,
-            _description,
-            _owner,
-            poolAddress,
-            _visible
-        );
-        emit PoolAdded(poolAddress);
     }
 
     function removePool(address poolAddress) public {
@@ -69,8 +36,9 @@ contract PoolRecorder {
     function getPoolInfo(address poolAddress)
         public
         view
-        returns (Pool memory)
+        returns (string memory, string memory, address,bool, uint)
     {
-        return poolRecorded[poolAddress];
+        IPoolFactory pool = IPoolFactory(poolAddress);
+        return pool.getPoolInfo();
     }
 }
